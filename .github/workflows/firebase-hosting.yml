@@ -1,0 +1,23 @@
+name: Deploy to Firebase Hosting
+
+on:
+  push:
+    branches:
+      - main  # Make sure your default branch is "main"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Decode Firebase service account
+        run: echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_CHAT_D647C }}" > firebase.json
+
+      - name: Deploy to Firebase
+        run: firebase deploy --only hosting --project chat-d647c --token "$(jq -r .private_key < firebase.json | sed 's/\\n/\n/g' | firebase login:ci)"
