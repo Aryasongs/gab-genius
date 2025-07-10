@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Gab Genius – Admin Panel</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+</head>
+<body>
+  <h2>Admin Panel – Gab Genius</h2>
+  <div id="admin-ui" style="display:none;">
+    <div id="questions"></div>
+  </div>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAl8eI-_8Ew9va0KPV8p4D2hc9WUTGiwuI",
+      authDomain: "chat-d647c.firebaseapp.com",
+      databaseURL: "https://chat-d647c-default-rtdb.firebaseio.com",
+      projectId: "chat-d647c",
+      storageBucket: "chat-d647c.firebasestorage.app",
+      messagingSenderId: "1001806177737",
+      appId: "1:1001806177737:web:7248a0983dcf0d45a87418"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const auth = firebase.auth();
+
+    const allowedEmail = "sdozera@gmail.com";
+
+    auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(res => {
+      if (res.user.email === allowedEmail) {
+        document.getElementById("admin-ui").style.display = "block";
+        loadQuestions();
+      } else {
+        alert("Access denied.");
+      }
+    });
+
+    function loadQuestions() {
+      const container = document.getElementById("questions");
+      db.ref("unanswered").once("value", snap => {
+        container.innerHTML = "";
+        snap.forEach(child => {
+          const q = child.val().question;
+          const key = child.key;
+          const div = document.createElement("div");
+          div.innerHTML = `
+            <p><b>Q:</b> ${q}</p>
+            <input type="text" placeholder="Enter answer..." id="a-${key}" />
+            <button onclick="saveAnswer('${key}', '${q}')">Save</button>
+            <hr/>
+          `;
+          container.appendChild(div);
+        });
+      });
+    }
+
+    function saveAnswer(key, question) {
+      const ans = document.getElementById("a-" + key).value;
+      if (ans.trim()) {
+        db.ref("qna").push({ question: question, answer: ans });
+        db.ref("unanswered/" + key).remove();
+        alert("Saved!");
+        loadQuestions();
+      }
+    }
+  </script>
+</body>
+</html>
