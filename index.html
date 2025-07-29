@@ -5,6 +5,468 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VORZA - Electric Vehicles Redefined</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Global variables
+        let currentPage = 'home';
+        let currentTestimonial = 0;
+        let configurationData = {
+            model: 'S',
+            basePrice: 89990,
+            color: { name: 'Pearl White', price: 0 },
+            interior: { name: 'All Black Premium', price: 0 },
+            autopilot: { name: 'Basic Autopilot', price: 0 },
+            wheels: { name: '19" Tempest Wheels', price: 0 }
+        };
+
+        // Page Navigation
+        function showPage(page) {
+            // Hide all pages
+            document.querySelectorAll('.page-content').forEach(p => {
+                p.classList.add('hidden');
+                p.classList.remove('page-transition', 'active');
+            });
+            
+            // Show selected page
+            const targetPage = document.getElementById(page + 'Page');
+            if (targetPage) {
+                targetPage.classList.remove('hidden');
+                targetPage.classList.add('page-transition');
+                
+                setTimeout(() => {
+                    targetPage.classList.add('active');
+                }, 50);
+                
+                currentPage = page;
+                
+                // Update navigation
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.classList.remove('text-black', 'font-semibold');
+                    link.classList.add('text-gray-700');
+                });
+                
+                // Trigger animations for the new page
+                if (page === 'home') {
+                    animateStats();
+                    animateBookingProgress();
+                }
+                
+                if (page === 'configurator') {
+                    updateCarPreview();
+                }
+            }
+        }
+
+        // Modal Functions
+        function openModal(modalType) {
+            const modal = document.getElementById(modalType + 'Modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+                
+                if (modalType === 'booking') {
+                    showFeatures();
+                    checkUserLocation();
+                }
+            }
+        }
+
+        function closeModal(modalType) {
+            const modal = document.getElementById(modalType + 'Modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+                
+                if (modalType === 'booking') {
+                    resetBookingModal();
+                }
+            }
+        }
+
+        // Mobile Navigation
+        function toggleMobileNav() {
+            const mobileNav = document.getElementById('mobileNav');
+            const overlay = document.getElementById('mobileNavOverlay');
+            const menuIcon = document.getElementById('menuIcon');
+            const closeIcon = document.getElementById('closeIcon');
+            
+            if (mobileNav.classList.contains('open')) {
+                closeMobileNav();
+            } else {
+                mobileNav.classList.add('open');
+                overlay.classList.remove('hidden');
+                menuIcon.classList.add('hidden');
+                closeIcon.classList.remove('hidden');
+            }
+        }
+
+        function closeMobileNav() {
+            const mobileNav = document.getElementById('mobileNav');
+            const overlay = document.getElementById('mobileNavOverlay');
+            const menuIcon = document.getElementById('menuIcon');
+            const closeIcon = document.getElementById('closeIcon');
+            
+            mobileNav.classList.remove('open');
+            overlay.classList.add('hidden');
+            menuIcon.classList.remove('hidden');
+            closeIcon.classList.add('hidden');
+        }
+
+        // Animations
+        function animateStats() {
+            const counters = document.querySelectorAll('.stats-counter');
+            counters.forEach(counter => {
+                const target = parseInt(counter.getAttribute('data-target'));
+                const increment = target / 100;
+                let current = 0;
+                
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        counter.textContent = target;
+                        clearInterval(timer);
+                    } else {
+                        counter.textContent = Math.floor(current);
+                    }
+                }, 20);
+            });
+        }
+
+        function animateBookingProgress() {
+            setTimeout(() => {
+                const progressBar = document.getElementById('bookingProgressBar');
+                if (progressBar) {
+                    progressBar.style.width = '94%';
+                }
+            }, 500);
+        }
+
+        // Intersection Observer for scroll animations
+        function initScrollAnimations() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.floating-card').forEach(card => {
+                observer.observe(card);
+            });
+        }
+
+        // Testimonial Slider
+        function initTestimonialSlider() {
+            const track = document.getElementById('testimonialTrack');
+            const slides = track.children.length;
+            
+            setInterval(() => {
+                currentTestimonial = (currentTestimonial + 1) % slides;
+                track.style.transform = `translateX(-${currentTestimonial * 100}%)`;
+            }, 5000);
+        }
+
+        // Booking Modal Functions
+        function showFeatures() {
+            document.getElementById('featuresStep').classList.remove('hidden');
+            document.getElementById('bookingStep').classList.add('hidden');
+            document.getElementById('paymentStep').classList.add('hidden');
+        }
+
+        function showBookingForm() {
+            document.getElementById('featuresStep').classList.add('hidden');
+            document.getElementById('bookingStep').classList.remove('hidden');
+            document.getElementById('paymentStep').classList.add('hidden');
+        }
+
+        function showPaymentForm() {
+            document.getElementById('featuresStep').classList.add('hidden');
+            document.getElementById('bookingStep').classList.add('hidden');
+            document.getElementById('paymentStep').classList.remove('hidden');
+        }
+
+        function resetBookingModal() {
+            showFeatures();
+        }
+
+        function checkUserLocation() {
+            // Simulate location check
+            const isInIndia = Math.random() > 0.5; // Random for demo
+            const locationMessage = document.getElementById('locationMessage');
+            const proceedBtn = document.getElementById('proceedBookingBtn');
+            
+            if (!isInIndia) {
+                locationMessage.classList.remove('hidden');
+                proceedBtn.disabled = true;
+                proceedBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                proceedBtn.textContent = 'Not Available in Your Region';
+            }
+        }
+
+        // Form Submissions
+        function submitRegistration(event) {
+            event.preventDefault();
+            showNotification('Success!', 'Registration submitted successfully. We will contact you soon.', 'success');
+            closeModal('register');
+        }
+
+        function submitBooking(event) {
+            event.preventDefault();
+            showPaymentForm();
+        }
+
+        // Card Functions
+        function formatCardNumber(input) {
+            let value = input.value.replace(/\s/g, '').replace(/[^0-9]/gi, '');
+            let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+            input.value = formattedValue;
+            
+            // Auto-fill cardholder name when user starts typing card number
+            if (value.length > 0) {
+                const cardholderNameInput = document.getElementById('cardholderName');
+                if (cardholderNameInput && cardholderNameInput.value === '') {
+                    cardholderNameInput.value = 'Harvinder Singh';
+                }
+            }
+        }
+
+        function detectCardType(cardNumber) {
+            const cardLogo = document.getElementById('cardLogo');
+            const cleanNumber = cardNumber.replace(/\s/g, '');
+            
+            cardLogo.classList.remove('visa-logo', 'mastercard-logo', 'amex-logo');
+            
+            if (cleanNumber.startsWith('4')) {
+                cardLogo.classList.add('visa-logo');
+                cardLogo.classList.remove('hidden');
+            } else if (cleanNumber.startsWith('5') || cleanNumber.startsWith('2')) {
+                cardLogo.classList.add('mastercard-logo');
+                cardLogo.classList.remove('hidden');
+            } else if (cleanNumber.startsWith('3')) {
+                cardLogo.classList.add('amex-logo');
+                cardLogo.classList.remove('hidden');
+            } else {
+                cardLogo.classList.add('hidden');
+            }
+        }
+
+        function formatExpiry(input) {
+            let value = input.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+            input.value = value;
+        }
+
+        function processPayment(event) {
+            event.preventDefault();
+            closeModal('booking');
+            openModal('bank');
+        }
+
+        // OTP Functions
+        function moveToNext(current, index) {
+            if (current.value.length === 1 && index < 5) {
+                const nextInput = current.parentElement.children[index + 1];
+                nextInput.focus();
+            }
+        }
+
+        function moveToPrev(current, event) {
+            if (event.key === 'Backspace' && current.value === '') {
+                const prevInput = current.previousElementSibling;
+                if (prevInput) {
+                    prevInput.focus();
+                }
+            }
+        }
+
+        function verifyOTP(event) {
+            event.preventDefault();
+            const otpInputs = document.querySelectorAll('.otp-input');
+            const otp = Array.from(otpInputs).map(input => input.value).join('');
+            
+            if (otp === '602702') {
+                closeModal('bank');
+                openModal('loading');
+                
+                setTimeout(() => {
+                    closeModal('loading');
+                    showSuccessModal();
+                }, 3000);
+            } else {
+                showNotification('Error', 'Invalid OTP. Please try again.', 'error');
+            }
+        }
+
+        function showSuccessModal() {
+            // Generate invoice data
+            const now = new Date();
+            document.getElementById('invoiceNumber').textContent = 'VRZ-' + now.getFullYear() + '-' + String(Math.floor(Math.random() * 999999)).padStart(6, '0');
+            document.getElementById('reservationDate').textContent = now.toLocaleDateString();
+            document.getElementById('customerName').textContent = 'Harvinder Singh';
+            document.getElementById('customerEmail').textContent = 'harvinder@example.com';
+            document.getElementById('customerPhone').textContent = '+91 98765-43210';
+            
+            openModal('success');
+        }
+
+        // Configurator Functions
+        function selectModel(model, price) {
+            // Remove selection from all cards
+            document.querySelectorAll('.model-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Add selection to clicked card
+            event.currentTarget.classList.add('selected');
+            
+            // Update configuration
+            configurationData.model = model;
+            configurationData.basePrice = price;
+            
+            // Show configuration options
+            document.getElementById('configOptions').classList.remove('hidden');
+            
+            // Update preview
+            updateCarPreview();
+            updateConfigSummary();
+        }
+
+        function selectColor(color, name, price) {
+            // Remove selection from all color options
+            document.querySelectorAll('.color-option').forEach(option => {
+                option.classList.remove('ring-4', 'ring-black');
+            });
+            
+            // Add selection to clicked option
+            event.currentTarget.classList.add('ring-4', 'ring-black');
+            
+            // Update configuration
+            configurationData.color = { name, price };
+            
+            // Update preview
+            updateCarPreview();
+            updateConfigSummary();
+        }
+
+        function selectInterior(name, price) {
+            configurationData.interior = { name, price };
+            updateConfigSummary();
+        }
+
+        function selectAutopilot(enabled) {
+            if (enabled) {
+                configurationData.autopilot = { name: 'Full Self-Driving Capability', price: 15000 };
+            } else {
+                configurationData.autopilot = { name: 'Basic Autopilot', price: 0 };
+            }
+            updateConfigSummary();
+        }
+
+        function selectWheels(name, price) {
+            configurationData.wheels = { name, price };
+            updateConfigSummary();
+        }
+
+        function updateCarPreview() {
+            const previewImage = document.getElementById('carPreviewImage');
+            const modelImages = {
+                'S': 'https://community.oriontec.xyz/IMG_9305.jpeg',
+                'X': 'https://community.oriontec.xyz/IMG_9306.jpeg',
+                'Y': 'https://community.oriontec.xyz/IMG_9307.jpeg',
+                'Z': 'https://community.oriontec.xyz/IMG_9308.jpeg'
+            };
+            
+            if (previewImage && modelImages[configurationData.model]) {
+                previewImage.src = modelImages[configurationData.model];
+            }
+            
+            // Update specs
+            document.getElementById('previewModel').textContent = 'Model ' + configurationData.model;
+            document.getElementById('previewColor').textContent = configurationData.color.name;
+            document.getElementById('previewInterior').textContent = configurationData.interior.name;
+            document.getElementById('previewWheels').textContent = configurationData.wheels.name;
+        }
+
+        function updateConfigSummary() {
+            const summary = document.getElementById('configSummary');
+            const totalPrice = document.getElementById('totalPrice');
+            
+            const total = configurationData.basePrice + 
+                         configurationData.color.price + 
+                         configurationData.interior.price + 
+                         configurationData.autopilot.price + 
+                         configurationData.wheels.price;
+            
+            summary.innerHTML = `
+                <div class="flex justify-between">
+                    <span>Model ${configurationData.model}</span>
+                    <span>$${configurationData.basePrice.toLocaleString()}</span>
+                </div>
+                <div class="flex justify-between text-gray-600">
+                    <span>${configurationData.color.name}</span>
+                    <span>${configurationData.color.price > 0 ? '+$' + configurationData.color.price.toLocaleString() : 'Included'}</span>
+                </div>
+                <div class="flex justify-between text-gray-600">
+                    <span>${configurationData.interior.name}</span>
+                    <span>${configurationData.interior.price > 0 ? '+$' + configurationData.interior.price.toLocaleString() : 'Included'}</span>
+                </div>
+                <div class="flex justify-between text-gray-600">
+                    <span>${configurationData.autopilot.name}</span>
+                    <span>${configurationData.autopilot.price > 0 ? '+$' + configurationData.autopilot.price.toLocaleString() : 'Included'}</span>
+                </div>
+                <div class="flex justify-between text-gray-600">
+                    <span>${configurationData.wheels.name}</span>
+                    <span>${configurationData.wheels.price > 0 ? '+$' + configurationData.wheels.price.toLocaleString() : 'Included'}</span>
+                </div>
+            `;
+            
+            totalPrice.textContent = '$' + total.toLocaleString();
+        }
+
+        // Notification System
+        function showNotification(title, message, type = 'success') {
+            const notification = document.getElementById('notification');
+            const titleEl = document.getElementById('notificationTitle');
+            const messageEl = document.getElementById('notificationMessage');
+            const iconEl = document.getElementById('notificationIcon');
+            
+            titleEl.textContent = title;
+            messageEl.textContent = message;
+            
+            // Reset classes
+            notification.classList.remove('error', 'warning');
+            
+            if (type === 'error') {
+                notification.classList.add('error');
+                iconEl.innerHTML = '<svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>';
+            } else if (type === 'warning') {
+                notification.classList.add('warning');
+                iconEl.innerHTML = '<svg class="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>';
+            } else {
+                iconEl.innerHTML = '<svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+            }
+            
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 5000);
+        }
+
+        // Initialize everything when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initScrollAnimations();
+            initTestimonialSlider();
+            animateStats();
+            animateBookingProgress();
+            
+            // Set default configurator values
+            updateCarPreview();
+            updateConfigSummary();
+        });
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -238,11 +700,160 @@
                 min-width: 33.333%;
             }
         }
+        
+        /* Payment Form Styles */
+        .card-input {
+            position: relative;
+        }
+        
+        .card-logo {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 32px;
+            height: 20px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        
+        .visa-logo {
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCA0MCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjI0IiByeD0iNCIgZmlsbD0iIzAwNTFBNSIvPgo8cGF0aCBkPSJNMTYuNzUgMTcuNUgxNC4yNUwxNS43NSA2LjVIMTguMjVMMTYuNzUgMTcuNVoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0yNS41IDE3LjVIMjMuMjVMMjEuNzUgNi41SDI0TDI1LjUgMTcuNVoiIGZpbGw9IndoaXRlIi8+Cjx0ZXh0IHg9IjIwIiB5PSIxNSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjgiIGZpbGw9IndoaXRlIiBmb250LXdlaWdodD0iYm9sZCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+VklTQTwvdGV4dD4KPC9zdmc+');
+        }
+        
+        .mastercard-logo {
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCA0MCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjI0IiByeD0iNCIgZmlsbD0iI0VCMDAxQiIvPgo8Y2lyY2xlIGN4PSIxNSIgY3k9IjEyIiByPSI2IiBmaWxsPSIjRkY1RjAwIi8+CjxjaXJjbGUgY3g9IjI1IiBjeT0iMTIiIHI9IjYiIGZpbGw9IiNGRkY1RjAiLz4KPC9zdmc+');
+        }
+        
+        .amex-logo {
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCA0MCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjI0IiByeD0iNCIgZmlsbD0iIzAwNkZDRiIvPgo8dGV4dCB4PSIyMCIgeT0iMTUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSI4IiBmaWxsPSJ3aGl0ZSIgZm9udC13ZWlnaHQ9ImJvbGQiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkFNRVg8L3RleHQ+Cjwvc3ZnPg==');
+        }
+        
+        .bank-page {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .bank-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+        }
+        
+        .otp-input {
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .otp-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .loading-spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .invoice-header {
+            background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+        }
+        
+        .success-checkmark {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #10b981;
+            position: relative;
+            margin: 0 auto 20px;
+        }
+        
+        .success-checkmark::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+        }
+        
+        .car-preview {
+            transition: all 0.5s ease;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .color-preview {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            transition: all 0.3s ease;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: white;
+            border-left: 4px solid #10b981;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            border-radius: 8px;
+            padding: 16px 20px;
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.error {
+            border-left-color: #ef4444;
+        }
+        
+        .notification.warning {
+            border-left-color: #f59e0b;
+        }
     </style>
 </head>
 <body class="bg-white text-gray-900">
     <!-- Loading Bar -->
     <div id="loadingBar" class="loading-bar"></div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification">
+        <div class="flex items-center">
+            <div id="notificationIcon" class="mr-3">
+                <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+            </div>
+            <div>
+                <div id="notificationTitle" class="font-semibold text-gray-800"></div>
+                <div id="notificationMessage" class="text-sm text-gray-600"></div>
+            </div>
+        </div>
+    </div>
 
     <!-- Navigation -->
     <nav id="mainNav" class="fixed top-0 w-full nav-glass z-50 transition-all duration-300">
@@ -687,25 +1298,25 @@
                     <div class="mb-16">
                         <h2 class="text-3xl font-light mb-8 text-center">Choose Your Model</h2>
                         <div class="model-selector">
-                            <div class="model-card bg-white p-6 rounded-2xl shadow-lg" onclick="selectModel('S')">
+                            <div class="model-card bg-white p-6 rounded-2xl shadow-lg" onclick="selectModel('S', 89990)">
                                 <img src="https://community.oriontec.xyz/IMG_9305.jpeg" alt="Model S" class="w-full h-40 object-cover rounded-lg mb-4">
                                 <h3 class="text-xl font-semibold mb-2">Model S</h3>
                                 <p class="text-gray-600 text-sm mb-4">From $89,990</p>
                                 <div class="text-sm text-gray-500">520 km range • 3.4s 0-100</div>
                             </div>
-                            <div class="model-card bg-white p-6 rounded-2xl shadow-lg" onclick="selectModel('X')">
+                            <div class="model-card bg-white p-6 rounded-2xl shadow-lg" onclick="selectModel('X', 99990)">
                                 <img src="https://community.oriontec.xyz/IMG_9306.jpeg" alt="Model X" class="w-full h-40 object-cover rounded-lg mb-4">
                                 <h3 class="text-xl font-semibold mb-2">Model X</h3>
                                 <p class="text-gray-600 text-sm mb-4">From $99,990</p>
                                 <div class="text-sm text-gray-500">480 km range • 3.8s 0-100</div>
                             </div>
-                            <div class="model-card bg-white p-6 rounded-2xl shadow-lg" onclick="selectModel('Y')">
+                            <div class="model-card bg-white p-6 rounded-2xl shadow-lg" onclick="selectModel('Y', 69990)">
                                 <img src="https://community.oriontec.xyz/IMG_9307.jpeg" alt="Model Y" class="w-full h-40 object-cover rounded-lg mb-4">
                                 <h3 class="text-xl font-semibold mb-2">Model Y</h3>
                                 <p class="text-gray-600 text-sm mb-4">From $69,990</p>
                                 <div class="text-sm text-gray-500">450 km range • 4.2s 0-100</div>
                             </div>
-                            <div class="model-card bg-white p-6 rounded-2xl shadow-lg" onclick="selectModel('Z')">
+                            <div class="model-card bg-white p-6 rounded-2xl shadow-lg" onclick="selectModel('Z', 129990)">
                                 <img src="https://community.oriontec.xyz/IMG_9308.jpeg" alt="Model Z" class="w-full h-40 object-cover rounded-lg mb-4">
                                 <h3 class="text-xl font-semibold mb-2">Model Z</h3>
                                 <p class="text-gray-600 text-sm mb-4">From $129,990</p>
@@ -716,17 +1327,61 @@
 
                     <!-- Configuration Options -->
                     <div id="configOptions" class="hidden">
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-16">
+                            <!-- Car Preview -->
+                            <div class="lg:col-span-1">
+                                <div class="sticky top-24">
+                                    <div class="car-preview bg-white p-6 rounded-2xl shadow-lg">
+                                        <h3 class="text-xl font-semibold mb-4">Live Preview</h3>
+                                        <img id="carPreviewImage" src="https://community.oriontec.xyz/IMG_9305.jpeg" alt="Car Preview" class="color-preview mb-4">
+                                        <div id="selectedSpecs" class="space-y-2 text-sm text-gray-600">
+                                            <div class="flex justify-between">
+                                                <span>Model:</span>
+                                                <span id="previewModel">Model S</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span>Color:</span>
+                                                <span id="previewColor">Pearl White</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span>Interior:</span>
+                                                <span id="previewInterior">All Black Premium</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span>Wheels:</span>
+                                                <span id="previewWheels">19" Tempest</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- Configuration Panel -->
-                            <div class="space-y-8">
+                            <div class="lg:col-span-1 space-y-8">
                                 <!-- Color Selection -->
                                 <div class="bg-white p-8 rounded-2xl shadow-lg">
                                     <h3 class="text-2xl font-semibold mb-6">Exterior Color</h3>
-                                    <div class="grid grid-cols-4 gap-4">
-                                        <div class="color-option w-16 h-16 bg-white border-4 border-gray-300 rounded-full cursor-pointer hover:border-black transition-colors" onclick="selectColor('white')"></div>
-                                        <div class="color-option w-16 h-16 bg-black border-4 border-gray-300 rounded-full cursor-pointer hover:border-black transition-colors" onclick="selectColor('black')"></div>
-                                        <div class="color-option w-16 h-16 bg-red-600 border-4 border-gray-300 rounded-full cursor-pointer hover:border-black transition-colors" onclick="selectColor('red')"></div>
-                                        <div class="color-option w-16 h-16 bg-blue-600 border-4 border-gray-300 rounded-full cursor-pointer hover:border-black transition-colors" onclick="selectColor('blue')"></div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="color-option flex flex-col items-center cursor-pointer p-4 rounded-lg hover:bg-gray-50 transition-colors" onclick="selectColor('white', 'Pearl White', 0)">
+                                            <div class="w-16 h-16 bg-white border-4 border-gray-300 rounded-full mb-2"></div>
+                                            <span class="text-sm font-medium">Pearl White</span>
+                                            <span class="text-xs text-gray-500">Included</span>
+                                        </div>
+                                        <div class="color-option flex flex-col items-center cursor-pointer p-4 rounded-lg hover:bg-gray-50 transition-colors" onclick="selectColor('black', 'Solid Black', 1500)">
+                                            <div class="w-16 h-16 bg-black border-4 border-gray-300 rounded-full mb-2"></div>
+                                            <span class="text-sm font-medium">Solid Black</span>
+                                            <span class="text-xs text-gray-500">+$1,500</span>
+                                        </div>
+                                        <div class="color-option flex flex-col items-center cursor-pointer p-4 rounded-lg hover:bg-gray-50 transition-colors" onclick="selectColor('red', 'Red Multi-Coat', 2500)">
+                                            <div class="w-16 h-16 bg-red-600 border-4 border-gray-300 rounded-full mb-2"></div>
+                                            <span class="text-sm font-medium">Red Multi-Coat</span>
+                                            <span class="text-xs text-gray-500">+$2,500</span>
+                                        </div>
+                                        <div class="color-option flex flex-col items-center cursor-pointer p-4 rounded-lg hover:bg-gray-50 transition-colors" onclick="selectColor('blue', 'Deep Blue Metallic', 2000)">
+                                            <div class="w-16 h-16 bg-blue-600 border-4 border-gray-300 rounded-full mb-2"></div>
+                                            <span class="text-sm font-medium">Deep Blue Metallic</span>
+                                            <span class="text-xs text-gray-500">+$2,000</span>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -734,15 +1389,19 @@
                                 <div class="bg-white p-8 rounded-2xl shadow-lg">
                                     <h3 class="text-2xl font-semibold mb-6">Interior</h3>
                                     <div class="space-y-4">
-                                        <label class="flex items-center space-x-3 cursor-pointer">
-                                            <input type="radio" name="interior" value="black" class="w-5 h-5" checked>
-                                            <span>All Black Premium Interior</span>
-                                            <span class="ml-auto text-gray-500">Included</span>
+                                        <label class="flex items-center justify-between p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                            <div class="flex items-center space-x-3">
+                                                <input type="radio" name="interior" value="black" class="w-5 h-5" checked onchange="selectInterior('All Black Premium', 0)">
+                                                <span class="font-medium">All Black Premium Interior</span>
+                                            </div>
+                                            <span class="text-gray-500">Included</span>
                                         </label>
-                                        <label class="flex items-center space-x-3 cursor-pointer">
-                                            <input type="radio" name="interior" value="white" class="w-5 h-5">
-                                            <span>Black and White Premium Interior</span>
-                                            <span class="ml-auto text-gray-500">+$2,000</span>
+                                        <label class="flex items-center justify-between p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                            <div class="flex items-center space-x-3">
+                                                <input type="radio" name="interior" value="white" class="w-5 h-5" onchange="selectInterior('Black and White Premium', 2000)">
+                                                <span class="font-medium">Black and White Premium Interior</span>
+                                            </div>
+                                            <span class="text-gray-500">+$2,000</span>
                                         </label>
                                     </div>
                                 </div>
@@ -751,15 +1410,19 @@
                                 <div class="bg-white p-8 rounded-2xl shadow-lg">
                                     <h3 class="text-2xl font-semibold mb-6">Autopilot</h3>
                                     <div class="space-y-4">
-                                        <label class="flex items-center space-x-3 cursor-pointer">
-                                            <input type="checkbox" name="autopilot" value="basic" class="w-5 h-5" checked>
-                                            <span>Basic Autopilot</span>
-                                            <span class="ml-auto text-gray-500">Included</span>
+                                        <label class="flex items-center justify-between p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                            <div class="flex items-center space-x-3">
+                                                <input type="checkbox" name="autopilot" value="basic" class="w-5 h-5" checked disabled>
+                                                <span class="font-medium">Basic Autopilot</span>
+                                            </div>
+                                            <span class="text-gray-500">Included</span>
                                         </label>
-                                        <label class="flex items-center space-x-3 cursor-pointer">
-                                            <input type="checkbox" name="autopilot" value="full" class="w-5 h-5">
-                                            <span>Full Self-Driving Capability</span>
-                                            <span class="ml-auto text-gray-500">+$15,000</span>
+                                        <label class="flex items-center justify-between p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                            <div class="flex items-center space-x-3">
+                                                <input type="checkbox" name="autopilot" value="full" class="w-5 h-5" onchange="selectAutopilot(this.checked)">
+                                                <span class="font-medium">Full Self-Driving Capability</span>
+                                            </div>
+                                            <span class="text-gray-500">+$15,000</span>
                                         </label>
                                     </div>
                                 </div>
@@ -768,55 +1431,61 @@
                                 <div class="bg-white p-8 rounded-2xl shadow-lg">
                                     <h3 class="text-2xl font-semibold mb-6">Wheels</h3>
                                     <div class="space-y-4">
-                                        <label class="flex items-center space-x-3 cursor-pointer">
-                                            <input type="radio" name="wheels" value="19" class="w-5 h-5" checked>
-                                            <span>19" Tempest Wheels</span>
-                                            <span class="ml-auto text-gray-500">Included</span>
+                                        <label class="flex items-center justify-between p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                            <div class="flex items-center space-x-3">
+                                                <input type="radio" name="wheels" value="19" class="w-5 h-5" checked onchange="selectWheels('19\" Tempest Wheels', 0)">
+                                                <span class="font-medium">19" Tempest Wheels</span>
+                                            </div>
+                                            <span class="text-gray-500">Included</span>
                                         </label>
-                                        <label class="flex items-center space-x-3 cursor-pointer">
-                                            <input type="radio" name="wheels" value="21" class="w-5 h-5">
-                                            <span>21" Sonic Carbon Wheels</span>
-                                            <span class="ml-auto text-gray-500">+$4,500</span>
+                                        <label class="flex items-center justify-between p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                            <div class="flex items-center space-x-3">
+                                                <input type="radio" name="wheels" value="21" class="w-5 h-5" onchange="selectWheels('21\" Sonic Carbon Wheels', 4500)">
+                                                <span class="font-medium">21" Sonic Carbon Wheels</span>
+                                            </div>
+                                            <span class="text-gray-500">+$4,500</span>
                                         </label>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Summary Panel -->
-                            <div class="lg:sticky lg:top-24">
-                                <div class="bg-white p-8 rounded-2xl shadow-lg">
-                                    <h3 class="text-2xl font-semibold mb-6">Your Configuration</h3>
-                                    <div id="configSummary" class="space-y-4 mb-8">
-                                        <div class="flex justify-between">
-                                            <span>Model S</span>
-                                            <span>$89,990</span>
+                            <div class="lg:col-span-1">
+                                <div class="sticky top-24">
+                                    <div class="bg-white p-8 rounded-2xl shadow-lg">
+                                        <h3 class="text-2xl font-semibold mb-6">Your Configuration</h3>
+                                        <div id="configSummary" class="space-y-4 mb-8">
+                                            <div class="flex justify-between">
+                                                <span>Model S</span>
+                                                <span>$89,990</span>
+                                            </div>
+                                            <div class="flex justify-between text-gray-600">
+                                                <span>Pearl White Paint</span>
+                                                <span>Included</span>
+                                            </div>
+                                            <div class="flex justify-between text-gray-600">
+                                                <span>All Black Premium Interior</span>
+                                                <span>Included</span>
+                                            </div>
+                                            <div class="flex justify-between text-gray-600">
+                                                <span>Basic Autopilot</span>
+                                                <span>Included</span>
+                                            </div>
+                                            <div class="flex justify-between text-gray-600">
+                                                <span>19" Tempest Wheels</span>
+                                                <span>Included</span>
+                                            </div>
                                         </div>
-                                        <div class="flex justify-between text-gray-600">
-                                            <span>Pearl White Paint</span>
-                                            <span>Included</span>
+                                        <div class="border-t pt-4 mb-8">
+                                            <div class="flex justify-between text-xl font-semibold">
+                                                <span>Total Price</span>
+                                                <span id="totalPrice">$89,990</span>
+                                            </div>
                                         </div>
-                                        <div class="flex justify-between text-gray-600">
-                                            <span>All Black Premium Interior</span>
-                                            <span>Included</span>
-                                        </div>
-                                        <div class="flex justify-between text-gray-600">
-                                            <span>Basic Autopilot</span>
-                                            <span>Included</span>
-                                        </div>
-                                        <div class="flex justify-between text-gray-600">
-                                            <span>19" Tempest Wheels</span>
-                                            <span>Included</span>
-                                        </div>
+                                        <button onclick="openModal('booking')" class="interactive-button w-full bg-black text-white py-4 rounded-full hover:bg-gray-800 transition-all font-semibold text-lg">
+                                            Reserve This Configuration
+                                        </button>
                                     </div>
-                                    <div class="border-t pt-4 mb-8">
-                                        <div class="flex justify-between text-xl font-semibold">
-                                            <span>Total Price</span>
-                                            <span id="totalPrice">$89,990</span>
-                                        </div>
-                                    </div>
-                                    <button onclick="openModal('booking')" class="interactive-button w-full bg-black text-white py-4 rounded-full hover:bg-gray-800 transition-all font-semibold text-lg">
-                                        Reserve This Configuration
-                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -1266,10 +1935,6 @@
                         <p class="text-sm text-gray-600 mb-4">
                             This reservation is fully refundable. You can cancel at any time before delivery.
                         </p>
-                        <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                            <p class="text-blue-800 text-sm font-medium">Demo Notice</p>
-                            <p class="text-blue-700 text-xs mt-1">This is a demonstration booking form. No actual payment will be processed.</p>
-                        </div>
                     </div>
                     
                     <div class="flex space-x-4 pt-4">
@@ -1277,7 +1942,92 @@
                             Back to Features
                         </button>
                         <button type="submit" class="interactive-button flex-1 py-4 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-medium">
-                            Complete Reservation
+                            Proceed to Payment
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Payment Step -->
+            <div id="paymentStep" class="hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-semibold">Payment Details</h3>
+                    <button onclick="closeModal('booking')" class="text-gray-400 hover:text-gray-600 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <form onsubmit="processPayment(event)" class="space-y-6">
+                    <div class="bg-gray-50 p-4 rounded-lg mb-6">
+                        <div class="flex justify-between items-center">
+                            <span class="font-medium">Reservation Amount:</span>
+                            <span class="text-xl font-semibold">$10,000</span>
+                        </div>
+                    </div>
+
+                    <div class="card-input">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Card Number</label>
+                        <input 
+                            type="text" 
+                            id="cardNumber" 
+                            placeholder="1234 5678 9012 3456" 
+                            maxlength="19"
+                            required 
+                            class="w-full p-4 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors"
+                            oninput="formatCardNumber(this); detectCardType(this.value)"
+                        >
+                        <div id="cardLogo" class="card-logo hidden"></div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Expiry Date</label>
+                            <input 
+                                type="text" 
+                                placeholder="MM/YY" 
+                                maxlength="5"
+                                required 
+                                class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors"
+                                oninput="formatExpiry(this)"
+                            >
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">CVV</label>
+                            <input 
+                                type="text" 
+                                id="cvv"
+                                placeholder="799" 
+                                maxlength="4"
+                                required 
+                                class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors"
+                            >
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Cardholder Name</label>
+                        <input 
+                            type="text" 
+                            id="cardholderName"
+                            placeholder="Cardholder Name"
+                            required 
+                            class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors"
+                        >
+                    </div>
+
+                    <div class="flex items-center space-x-3">
+                        <input type="checkbox" id="saveCard" class="w-5 h-5">
+                        <label for="saveCard" class="text-sm text-gray-600">Save card for future purchases</label>
+                    </div>
+                    
+                    <div class="flex space-x-4 pt-4">
+                        <button type="button" onclick="showBookingForm()" class="flex-1 py-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+                            Back
+                        </button>
+                        <button type="submit" class="interactive-button flex-1 py-4 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-medium">
+                            Pay $10,000
                         </button>
                     </div>
                 </form>
@@ -1285,365 +2035,123 @@
         </div>
     </div>
 
-    <script>
-        // Global variables
-        let currentPage = 'home';
-        let selectedModel = null;
-        let watchlist = JSON.parse(localStorage.getItem('vorzaWatchlist')) || [];
+    <!-- Bank OTP Modal -->
+    <div id="bankModal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bank-page w-full h-full flex items-center justify-center">
+            <div class="bank-card p-8 max-w-md w-full">
+                <div class="text-center mb-8">
+                    <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-2">Secure Payment Verification</h3>
+                    <p class="text-gray-600">Enter the OTP sent to your registered mobile number</p>
+                    <p class="text-sm text-gray-500 mt-2">+91 ****-***-8765</p>
+                </div>
 
-        // Page management
-        function showPage(pageId) {
-            // Hide all pages
-            document.querySelectorAll('.page-content').forEach(page => {
-                page.classList.add('hidden');
-                page.classList.remove('page-transition', 'active');
-            });
-            
-            // Show selected page
-            const targetPage = document.getElementById(pageId + 'Page');
-            if (targetPage) {
-                targetPage.classList.remove('hidden');
-                targetPage.classList.add('page-transition');
-                
-                // Trigger animation
-                setTimeout(() => {
-                    targetPage.classList.add('active');
-                }, 50);
-                
-                currentPage = pageId;
-                
-                // Update URL without page reload
-                history.pushState({page: pageId}, '', `#${pageId}`);
-                
-                // Initialize page-specific functionality
-                initializePage(pageId);
-            }
-            
-            // Update navigation
-            updateNavigation();
-        }
+                <form onsubmit="verifyOTP(event)" class="space-y-6">
+                    <div class="flex justify-center space-x-3">
+                        <input type="text" maxlength="1" class="otp-input" oninput="moveToNext(this, 0)" onkeydown="moveToPrev(this, event)">
+                        <input type="text" maxlength="1" class="otp-input" oninput="moveToNext(this, 1)" onkeydown="moveToPrev(this, event)">
+                        <input type="text" maxlength="1" class="otp-input" oninput="moveToNext(this, 2)" onkeydown="moveToPrev(this, event)">
+                        <input type="text" maxlength="1" class="otp-input" oninput="moveToNext(this, 3)" onkeydown="moveToPrev(this, event)">
+                        <input type="text" maxlength="1" class="otp-input" oninput="moveToNext(this, 4)" onkeydown="moveToPrev(this, event)">
+                        <input type="text" maxlength="1" class="otp-input" oninput="moveToNext(this, 5)" onkeydown="moveToPrev(this, event)">
+                    </div>
 
-        function initializePage(pageId) {
-            switch(pageId) {
-                case 'home':
-                    initializeHomeAnimations();
-                    break;
-                case 'models':
-                    initializeModelsPage();
-                    break;
-                case 'configurator':
-                    initializeConfigurator();
-                    break;
-                case 'experience':
-                    initializeExperience();
-                    break;
-                case 'support':
-                    initializeSupport();
-                    break;
-            }
-        }
+                    <div class="text-center">
+                        <p class="text-sm text-gray-600 mb-4">Didn't receive the code?</p>
+                        <button type="button" class="text-blue-600 hover:text-blue-700 font-medium text-sm">Resend OTP</button>
+                    </div>
 
-        function updateNavigation() {
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.classList.remove('text-black', 'font-semibold');
-                link.classList.add('text-gray-700', 'font-medium');
-            });
-        }
+                    <button type="submit" class="w-full bg-blue-600 text-white py-4 rounded-lg hover:bg-blue-700 transition-colors font-semibold">
+                        Verify & Complete Payment
+                    </button>
+                </form>
 
-        // Mobile navigation
-        function toggleMobileNav() {
-            const mobileNav = document.getElementById('mobileNav');
-            const overlay = document.getElementById('mobileNavOverlay');
-            const menuIcon = document.getElementById('menuIcon');
-            const closeIcon = document.getElementById('closeIcon');
-            
-            if (mobileNav.classList.contains('open')) {
-                closeMobileNav();
-            } else {
-                mobileNav.classList.add('open');
-                overlay.classList.remove('hidden');
-                menuIcon.classList.add('hidden');
-                closeIcon.classList.remove('hidden');
-                document.body.style.overflow = 'hidden';
-            }
-        }
+                <div class="mt-6 text-center">
+                    <p class="text-xs text-gray-500">
+                        This is a secure SSL encrypted payment. Your card details are safe.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        function closeMobileNav() {
-            const mobileNav = document.getElementById('mobileNav');
-            const overlay = document.getElementById('mobileNavOverlay');
-            const menuIcon = document.getElementById('menuIcon');
-            const closeIcon = document.getElementById('closeIcon');
-            
-            mobileNav.classList.remove('open');
-            overlay.classList.add('hidden');
-            menuIcon.classList.remove('hidden');
-            closeIcon.classList.add('hidden');
-            document.body.style.overflow = '';
-        }
+    <!-- Loading Modal -->
+    <div id="loadingModal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-8 text-center">
+            <div class="loading-spinner mx-auto mb-4"></div>
+            <h3 class="text-xl font-semibold mb-2">Processing Payment</h3>
+            <p class="text-gray-600">Please wait while we process your reservation...</p>
+        </div>
+    </div>
 
-        // Modal management
-        function openModal(modalId) {
-            const modal = document.getElementById(modalId + 'Modal');
-            if (modal) {
-                modal.classList.remove('hidden');
-                document.body.style.overflow = 'hidden';
-                
-                if (modalId === 'booking') {
-                    checkUserLocation();
-                }
-            }
-        }
+    <!-- Success Modal -->
+    <div id="successModal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="text-center mb-8">
+                <div class="success-checkmark"></div>
+                <h3 class="text-3xl font-semibold text-green-600 mb-2">Payment Successful!</h3>
+                <p class="text-gray-600">Your VORZA reservation has been confirmed</p>
+            </div>
 
-        function closeModal(modalId) {
-            const modal = document.getElementById(modalId + 'Modal');
-            if (modal) {
-                modal.classList.add('hidden');
-                document.body.style.overflow = '';
-                
-                if (modalId === 'booking') {
-                    showFeatures();
-                }
-            }
-        }
+            <!-- Invoice -->
+            <div id="invoice" class="bg-gray-50 rounded-lg p-6 mb-6">
+                <div class="invoice-header text-white p-6 rounded-t-lg mb-6">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h2 class="text-2xl font-bold">VORZA</h2>
+                            <p class="text-gray-300">Reservation Invoice</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm text-gray-300">Invoice #</p>
+                            <p class="font-semibold" id="invoiceNumber">VRZ-2025-001234</p>
+                        </div>
+                    </div>
+                </div>
 
-        // Booking modal functions
-        function showBookingForm() {
-            document.getElementById('featuresStep').classList.add('hidden');
-            document.getElementById('bookingStep').classList.remove('hidden');
-        }
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <h4 class="font-semibold mb-2">Bill To:</h4>
+                        <p class="text-gray-600" id="customerName">Harvinder Singh</p>
+                        <p class="text-gray-600" id="customerEmail">harvinder@example.com</p>
+                        <p class="text-gray-600" id="customerPhone">+91 98765-43210</p>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">Reservation Details:</h4>
+                        <p class="text-gray-600">Date: <span id="reservationDate"></span></p>
+                        <p class="text-gray-600">Model: <span id="reservedModel">VORZA Model S</span></p>
+                        <p class="text-gray-600">Status: <span class="text-green-600 font-semibold">Confirmed</span></p>
+                    </div>
+                </div>
 
-        function showFeatures() {
-            document.getElementById('bookingStep').classList.add('hidden');
-            document.getElementById('featuresStep').classList.remove('hidden');
-        }
+                <div class="border-t pt-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <span>Reservation Deposit</span>
+                        <span>$10,000.00</span>
+                    </div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span>Processing Fee</span>
+                        <span>$0.00</span>
+                    </div>
+                    <div class="border-t pt-2 flex justify-between items-center font-semibold text-lg">
+                        <span>Total Paid</span>
+                        <span>$10,000.00</span>
+                    </div>
+                </div>
 
-        function checkUserLocation() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    function(position) {
-                        fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${position.coords.latitude}&longitude=${position.coords.longitude}&localityLanguage=en`)
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.countryName !== 'India') {
-                                    document.getElementById('locationMessage').classList.remove('hidden');
-                                    const proceedBtn = document.getElementById('proceedBookingBtn');
-                                    proceedBtn.disabled = true;
-                                    proceedBtn.classList.add('opacity-50', 'cursor-not-allowed');
-                                    proceedBtn.textContent = 'Not Available in Your Region';
-                                }
-                            })
-                            .catch(error => {
-                                console.log('Geolocation service unavailable');
-                            });
-                    },
-                    function(error) {
-                        console.log('Geolocation permission denied');
-                    }
-                );
-            }
-        }
+                <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+                    <h4 class="font-semibold text-blue-800 mb-2">Next Steps:</h4>
+                    <ul class="text-sm text-blue-700 space-y-1">
+                        <li>• You will receive a confirmation email within 24 hours</li>
+                        <li>• Our team will contact you to schedule a test drive</li>
+                        <li>• Final configuration and delivery will be arranged</li>
+                        <li>• Your deposit is fully refundable until delivery</li>
+                    </ul>
+                </div>
+            </div>
 
-        // Form submissions
-        function submitRegistration(event) {
-            event.preventDefault();
-            showLoadingBar();
-            setTimeout(() => {
-                hideLoadingBar();
-                alert('Thank you for registering your interest! We will contact you soon with updates about VORZA vehicles.');
-                closeModal('register');
-            }, 1500);
-        }
-
-        function submitBooking(event) {
-            event.preventDefault();
-            showLoadingBar();
-            setTimeout(() => {
-                hideLoadingBar();
-                alert('Reservation submitted successfully! You will receive a confirmation email shortly with next steps.');
-                closeModal('booking');
-            }, 2000);
-        }
-
-        // Configurator functions
-        function selectModel(model) {
-            selectedModel = model;
-            document.querySelectorAll('.model-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-            event.currentTarget.classList.add('selected');
-            
-            document.getElementById('configOptions').classList.remove('hidden');
-            updateConfigSummary();
-        }
-
-        function selectColor(color) {
-            document.querySelectorAll('.color-option').forEach(option => {
-                option.classList.remove('border-black');
-                option.classList.add('border-gray-300');
-            });
-            event.currentTarget.classList.remove('border-gray-300');
-            event.currentTarget.classList.add('border-black');
-            updateConfigSummary();
-        }
-
-        function updateConfigSummary() {
-            // This would update the configuration summary in a real application
-            console.log('Configuration updated');
-        }
-
-        // Animation functions
-        function initializeHomeAnimations() {
-            // Animate stats counters
-            const counters = document.querySelectorAll('.stats-counter');
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        animateCounter(entry.target);
-                        entry.target.parentElement.classList.add('visible');
-                    }
-                });
-            });
-            
-            counters.forEach(counter => {
-                observer.observe(counter);
-            });
-            
-            // Animate booking progress bar
-            setTimeout(() => {
-                document.getElementById('bookingProgressBar').style.width = '94%';
-            }, 1000);
-        }
-
-        function animateCounter(element) {
-            const target = parseFloat(element.getAttribute('data-target'));
-            const increment = target / 100;
-            let current = 0;
-            
-            const timer = setInterval(() => {
-                current += increment;
-                if (current >= target) {
-                    current = target;
-                    clearInterval(timer);
-                }
-                element.textContent = current % 1 === 0 ? current : current.toFixed(1);
-            }, 20);
-        }
-
-        function initializeModelsPage() {
-            // Initialize model page animations
-            const cards = document.querySelectorAll('.car-showcase');
-            cards.forEach((card, index) => {
-                setTimeout(() => {
-                    card.style.opacity = '1';
-                    card.style.transform = 'translateY(0)';
-                }, index * 200);
-            });
-        }
-
-        function initializeConfigurator() {
-            // Initialize configurator
-            console.log('Configurator initialized');
-        }
-
-        function initializeExperience() {
-            // Initialize experience page
-            const cards = document.querySelectorAll('.floating-card');
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                    }
-                });
-            });
-            
-            cards.forEach(card => {
-                observer.observe(card);
-            });
-        }
-
-        function initializeSupport() {
-            // Initialize support page
-            console.log('Support page initialized');
-        }
-
-        // Utility functions
-        function showLoadingBar() {
-            const loadingBar = document.getElementById('loadingBar');
-            loadingBar.style.width = '0%';
-            loadingBar.style.width = '100%';
-        }
-
-        function hideLoadingBar() {
-            const loadingBar = document.getElementById('loadingBar');
-            setTimeout(() => {
-                loadingBar.style.width = '0%';
-            }, 500);
-        }
-
-        // Watchlist functionality
-        function addToWatchlist(model) {
-            if (!watchlist.includes(model)) {
-                watchlist.push(model);
-                localStorage.setItem('vorzaWatchlist', JSON.stringify(watchlist));
-                alert(`${model} added to your watchlist!`);
-            } else {
-                alert(`${model} is already in your watchlist!`);
-            }
-        }
-
-        // Event listeners
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize the home page
-            showPage('home');
-            
-            // Handle browser back/forward
-            window.addEventListener('popstate', function(event) {
-                if (event.state && event.state.page) {
-                    showPage(event.state.page);
-                }
-            });
-            
-            // Close modals when clicking outside
-            window.addEventListener('click', function(event) {
-                if (event.target.classList.contains('backdrop-blur-sm')) {
-                    const modals = ['register', 'booking'];
-                    modals.forEach(modalId => {
-                        const modal = document.getElementById(modalId + 'Modal');
-                        if (modal && !modal.classList.contains('hidden')) {
-                            closeModal(modalId);
-                        }
-                    });
-                }
-            });
-            
-            // Handle escape key
-            document.addEventListener('keydown', function(event) {
-                if (event.key === 'Escape') {
-                    closeMobileNav();
-                    const modals = ['register', 'booking'];
-                    modals.forEach(modalId => {
-                        const modal = document.getElementById(modalId + 'Modal');
-                        if (modal && !modal.classList.contains('hidden')) {
-                            closeModal(modalId);
-                        }
-                    });
-                }
-            });
-        });
-
-        // Smooth scrolling for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-    </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'966c0c47e60f41b6',t:'MTc1Mzc4NjE0OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
-</html>
+            <div class="flex space
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'966c342a14d10e67',t:'MTc1Mzc4Nzc4My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
