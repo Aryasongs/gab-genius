@@ -302,11 +302,22 @@
         function showSuccessModal() {
             // Generate invoice data
             const now = new Date();
-            document.getElementById('invoiceNumber').textContent = 'VRZ-' + now.getFullYear() + '-' + String(Math.floor(Math.random() * 999999)).padStart(6, '0');
+            const invoiceNum = 'VORZA-PRB-1078';
+            const bookingRef = 'VRZ-' + now.getFullYear() + '-' + String(Math.floor(Math.random() * 999999)).padStart(6, '0');
+            const vatAmount = (configurationData.basePrice * 0.04).toFixed(2);
+            const totalWithVat = (configurationData.basePrice + parseFloat(vatAmount)).toFixed(2);
+            
+            document.getElementById('invoiceNumber').textContent = invoiceNum;
+            document.getElementById('bookingReference').textContent = bookingRef;
             document.getElementById('reservationDate').textContent = now.toLocaleDateString();
             document.getElementById('customerName').textContent = 'Harvinder Singh';
-            document.getElementById('customerEmail').textContent = 'harvinder@oriontec.xy';
-            document.getElementById('customerPhone').textContent = '+1 ********';
+            document.getElementById('customerEmail').textContent = 'harvinder@example.com';
+            document.getElementById('customerPhone').textContent = '+91 98765-43210';
+            document.getElementById('selectedModel').textContent = 'VORZA Model ' + configurationData.model;
+            document.getElementById('bookingAmount').textContent = '$10,000.00';
+            document.getElementById('vatAmount').textContent = '$' + vatAmount;
+            document.getElementById('totalPaid').textContent = '$' + totalWithVat;
+            document.getElementById('transactionId').textContent = 'TXN' + String(Math.floor(Math.random() * 999999999)).padStart(9, '0');
             
             openModal('success');
         }
@@ -375,7 +386,11 @@
                 'S': 'https://community.oriontec.xyz/IMG_9305.jpeg',
                 'X': 'https://community.oriontec.xyz/IMG_9306.jpeg',
                 'Y': 'https://community.oriontec.xyz/IMG_9307.jpeg',
-                'Z': 'https://community.oriontec.xyz/IMG_9308.jpeg'
+                'Z': 'https://community.oriontec.xyz/IMG_9308.jpeg',
+                'R': 'https://community.oriontec.xyz/IMG_9309.jpeg',
+                'L': 'https://vorza.oriontec.xyz/IMG_9340.jpeg',
+                'LP': 'https://vorza.oriontec.xyz/IMG_9347.jpeg',
+                'W': 'https://vorza.oriontec.xyz/IMG_9343.jpeg'
             };
             
             if (previewImage && modelImages[configurationData.model]) {
@@ -870,7 +885,9 @@
                     <button onclick="showPage('models')" class="nav-link text-gray-700 hover:text-black transition-colors font-medium">Models</button>
                     <button onclick="showPage('configurator')" class="nav-link text-gray-700 hover:text-black transition-colors font-medium">Configure</button>
                     <button onclick="showPage('experience')" class="nav-link text-gray-700 hover:text-black transition-colors font-medium">Experience</button>
+                    <button onclick="showPage('charging')" class="nav-link text-gray-700 hover:text-black transition-colors font-medium">Find Your Charge</button>
                     <button onclick="showPage('support')" class="nav-link text-gray-700 hover:text-black transition-colors font-medium">Support</button>
+                    <button onclick="showPage('careers')" class="nav-link text-gray-700 hover:text-black transition-colors font-medium">Careers</button>
                     <button onclick="openModal('register')" class="interactive-button bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 transition-all font-medium">Register</button>
                 </div>
                 
@@ -897,7 +914,9 @@
                     <button onclick="showPage('models'); closeMobileNav();" class="block w-full text-left py-3 text-lg font-medium text-gray-700 hover:text-black transition-colors">Models</button>
                     <button onclick="showPage('configurator'); closeMobileNav();" class="block w-full text-left py-3 text-lg font-medium text-gray-700 hover:text-black transition-colors">Configure</button>
                     <button onclick="showPage('experience'); closeMobileNav();" class="block w-full text-left py-3 text-lg font-medium text-gray-700 hover:text-black transition-colors">Experience</button>
+                    <button onclick="showPage('charging'); closeMobileNav();" class="block w-full text-left py-3 text-lg font-medium text-gray-700 hover:text-black transition-colors">Find Your Charge</button>
                     <button onclick="showPage('support'); closeMobileNav();" class="block w-full text-left py-3 text-lg font-medium text-gray-700 hover:text-black transition-colors">Support</button>
+                    <button onclick="showPage('careers'); closeMobileNav();" class="block w-full text-left py-3 text-lg font-medium text-gray-700 hover:text-black transition-colors">Careers</button>
                     <button onclick="openModal('register'); closeMobileNav();" class="block w-full text-left py-3 text-lg font-medium bg-black text-white rounded-lg mt-6">Register Interest</button>
                 </nav>
             </div>
@@ -915,7 +934,7 @@
             <!-- Hero Section -->
             <section class="relative h-screen flex items-center justify-center overflow-hidden">
                 <div class="video-container">
-                    <img src="https://vorza.oriontec.xyz/IMG_9350.jpeg" alt="VORZA Hero" class="video-bg object-cover">
+                    <img src="https://community.oriontec.xyz/IMG_9304.jpeg" alt="VORZA Hero" class="video-bg object-cover">
                     <div class="absolute inset-0 hero-video-overlay"></div>
                 </div>
                 
@@ -997,7 +1016,7 @@
                             <img src="https://community.oriontec.xyz/IMG_9306.jpeg" alt="VORZA Model X" class="w-full h-64 lg:h-80 object-cover">
                             <div class="p-8">
                                 <h3 class="text-2xl lg:text-3xl font-semibold mb-4">Model X</h3>
-                                <p class="text-gray-600 mb-6">The ultimate electric Luxury Sedan for families</p>
+                                <p class="text-gray-600 mb-6">The ultimate electric SUV for families</p>
                                 <div class="flex justify-between items-center">
                                     <span class="text-2xl font-light">From $99,990</span>
                                     <button onclick="showPage('models')" class="interactive-button bg-black text-white px-6 py-3 rounded-full hover:bg-gray-800 transition-all">
@@ -1041,13 +1060,12 @@
                             <h2 class="text-4xl lg:text-6xl font-light mb-8">About VORZA</h2>
                             <div class="space-y-6 text-lg text-gray-600 leading-relaxed">
                                 <p>
-                        
                                     VORZA is a next-generation American electric car company focused on performance, safety, and sustainability. Designed for the bold, built for the future.
                                 </p>
-                            
+                                <p>
                                     Our mission is to redefine electric driving with precision engineering and futuristic design that doesn't compromise on luxury or performance.
                                 </p>
-                               
+                                <p>
                                     Headquartered in the United States, we are a newly established company bringing cutting-edge technology to the roads of tomorrow, making sustainable transportation accessible to everyone.
                                 </p>
                             </div>
@@ -1126,7 +1144,7 @@
                             <div>
                                 <h2 class="text-4xl lg:text-5xl font-light mb-6">Model X</h2>
                                 <p class="text-xl text-gray-600 mb-8">
-                                    The ultimate electric Luxury Sedan. Spacious, powerful, and packed with advanced technology for the modern family.
+                                    The ultimate electric SUV. Spacious, powerful, and packed with advanced technology for the modern family.
                                 </p>
                                 <div class="grid grid-cols-2 gap-6 mb-8">
                                     <div>
@@ -1164,7 +1182,7 @@
                             <div class="order-2 lg:order-1">
                                 <h2 class="text-4xl lg:text-5xl font-light mb-6">Model Y</h2>
                                 <p class="text-xl text-gray-600 mb-8">
-                                    The perfect balance of efficiency and versatility. Compact Luxury Sedan design with maximum utility.
+                                    The perfect balance of efficiency and versatility. Compact SUV design with maximum utility.
                                 </p>
                                 <div class="grid grid-cols-2 gap-6 mb-8">
                                     <div>
@@ -1239,138 +1257,7 @@
                             </div>
                         </div>
 
-                        <div class="section-divider"></div> 
-                        <!-- Model L (Luxury Sedan) - Multiple Views -->
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                            <div>
-                                <div class="grid grid-cols-2 gap-4 mb-4">
-                                    <img src="https://vorza.oriontec.xyz/IMG_9340.jpeg" alt="VORZA Model L Front" class="w-full rounded-xl shadow-lg">
-                                    <img src="https://vorza.oriontec.xyz/IMG_9345.jpeg" alt="VORZA Model L Side" class="w-full rounded-xl shadow-lg">
-                                </div>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <img src="https://vorza.oriontec.xyz/IMG_9349.jpeg" alt="VORZA Model L Interior" class="w-full rounded-xl shadow-lg">
-                                    <img src="https://vorza.oriontec.xyz/IMG_9350.jpeg" alt="VORZA Model L Detail" class="w-full rounded-xl shadow-lg">
-                                </div>
-                            </div>
-                            <div>
-                                <h2 class="text-4xl lg:text-5xl font-light mb-6">Model L</h2>
-                                <p class="text-xl text-gray-600 mb-8">
-                                    The ultimate luxury sedan. Uncompromising elegance meets cutting-edge electric performance. Available in multiple configurations to suit your style.
-                                </p>
-                                <div class="grid grid-cols-2 gap-6 mb-8">
-                                    <div>
-                                        <div class="text-3xl font-light mb-2">580 km</div>
-                                        <div class="text-gray-500">Range</div>
-                                    </div>
-                                    <div>
-                                        <div class="text-3xl font-light mb-2">3.1s</div>
-                                        <div class="text-gray-500">0-100 km/h</div>
-                                    </div>
-                                    <div>
-                                        <div class="text-3xl font-light mb-2">270 km/h</div>
-                                        <div class="text-gray-500">Top Speed</div>
-                                    </div>
-                                    <div>
-                                        <div class="text-3xl font-light mb-2">$149,990</div>
-                                        <div class="text-gray-500">Starting Price</div>
-                                    </div>
-                                </div>
-                                <div class="flex flex-col sm:flex-row gap-4">
-                                    <button onclick="openModal('booking')" class="interactive-button bg-black text-white px-8 py-4 rounded-full hover:bg-gray-800 transition-all font-semibold">
-                                        Reserve Now
-                                    </button>
-                                    <button onclick="showPage('configurator')" class="interactive-button border-2 border-black text-black px-8 py-4 rounded-full hover:bg-black hover:text-white transition-all font-semibold">
-                                        Configure
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="section-divider"></div>                     <!-- Model L Pro (Second Variant) -->
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                            <div class="order-2 lg:order-1">
-                                <h2 class="text-4xl lg:text-5xl font-light mb-6">Model L Pro</h2>
-                                <p class="text-xl text-gray-600 mb-8">
-                                    The second variant of our luxury sedan series. Enhanced performance with premium features and advanced technology for the ultimate driving experience.
-                                </p>
-                                <div class="grid grid-cols-2 gap-6 mb-8">
-                                    <div>
-                                        <div class="text-3xl font-light mb-2">620 km</div>
-                                        <div class="text-gray-500">Range</div>
-                                    </div>
-                                    <div>
-                                        <div class="text-3xl font-light mb-2">2.9s</div>
-                                        <div class="text-gray-500">0-100 km/h</div>
-                                    </div>
-                                    <div>
-                                        <div class="text-3xl font-light mb-2">285 km/h</div>
-                                        <div class="text-gray-500">Top Speed</div>
-                                    </div>
-                                    <div>
-                                        <div class="text-3xl font-light mb-2">$169,990</div>
-                                        <div class="text-gray-500">Starting Price</div>
-                                    </div>
-                                </div>
-                                <div class="flex flex-col sm:flex-row gap-4">
-                                    <button onclick="openModal('booking')" class="interactive-button bg-black text-white px-8 py-4 rounded-full hover:bg-gray-800 transition-all font-semibold">
-                                        Reserve Now
-                                    </button>
-                                    <button onclick="showPage('configurator')" class="interactive-button border-2 border-black text-black px-8 py-4 rounded-full hover:bg-black hover:text-white transition-all font-semibold">
-                                        Configure
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="order-1 lg:order-2">
-                                <img src="https://vorza.oriontec.xyz/IMG_9347.jpeg" alt="VORZA Model L Pro" class="w-full rounded-2xl shadow-2xl">
-                            </div>
-                        </div>
-
                         <div class="section-divider"></div>
-
-                        <!-- Model W (White Sedan) - Dual Views -->
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                            <div>
-                                <div class="grid grid-cols-1 gap-4">
-                                    <img src="https://vorza.oriontec.xyz/IMG_9342.jpeg" alt="VORZA Model W Front View" class="w-full rounded-2xl shadow-2xl">
-                                    <img src="https://vorza.oriontec.xyz/IMG_9343.jpeg" alt="VORZA Model W Side View" class="w-full rounded-2xl shadow-2xl">
-                                </div>
-                            </div>
-                            <div>
-                                <h2 class="text-4xl lg:text-5xl font-light mb-6">Model W</h2>
-                                <p class="text-xl text-gray-600 mb-8">
-                                    The affordable luxury sedan in pristine white. Premium features at an accessible price point of just $58,000. Perfect for those seeking luxury without compromise.
-                                </p>
-                                <div class="grid grid-cols-2 gap-6 mb-8">
-                                    <div>
-                                        <div class="text-3xl font-light mb-2">400 km</div>
-                                        <div class="text-gray-500">Range</div>
-                                    </div>
-                                    <div>
-                                        <div class="text-3xl font-light mb-2">4.8s</div>
-                                        <div class="text-gray-500">0-100 km/h</div>
-                                    </div>
-                                    <div>
-                                        <div class="text-3xl font-light mb-2">210 km/h</div>
-                                        <div class="text-gray-500">Top Speed</div>
-                                    </div>
-                                    <div>
-                                        <div class="text-3xl font-light mb-2">$58,000</div>
-                                        <div class="text-gray-500">Starting Price</div>
-                                    </div>
-                                </div>
-                                <div class="bg-green-50 p-4 rounded-lg mb-6">
-                                    <p class="text-green-800 font-semibold text-center">🎉 Most Affordable Luxury Sedan - Only $58,000!</p>
-                                </div>
-                                <div class="flex flex-col sm:flex-row gap-4">
-                                    <button onclick="openModal('booking')" class="interactive-button bg-black text-white px-8 py-4 rounded-full hover:bg-gray-800 transition-all font-semibold">
-                                        Reserve Now
-                                    </button>
-                                    <button onclick="showPage('configurator')" class="interactive-button border-2 border-black text-black px-8 py-4 rounded-full hover:bg-black hover:text-white transition-all font-semibold">
-                                        Configure
-                                    </button>
-                                </div>
-                            </div>
-                          <div class="section-divider"></div> 
 
                         <!-- Model R -->
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -1410,6 +1297,146 @@
                                 <img src="https://community.oriontec.xyz/IMG_9309.jpeg" alt="VORZA Model R" class="w-full rounded-2xl shadow-2xl">
                             </div>
                         </div>
+
+                        <div class="section-divider"></div>
+
+                        <!-- Model L -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                            <div>
+                                <img src="https://vorza.oriontec.xyz/IMG_9340.jpeg" alt="VORZA Model L" class="w-full rounded-2xl shadow-2xl mb-4">
+                                <div class="grid grid-cols-3 gap-2">
+                                    <img src="https://vorza.oriontec.xyz/IMG_9345.jpeg" alt="VORZA Model L Interior" class="w-full h-20 object-cover rounded-lg">
+                                    <img src="https://vorza.oriontec.xyz/IMG_9349.jpeg" alt="VORZA Model L Side" class="w-full h-20 object-cover rounded-lg">
+                                    <img src="https://vorza.oriontec.xyz/IMG_9350.jpeg" alt="VORZA Model L Detail" class="w-full h-20 object-cover rounded-lg">
+                                </div>
+                            </div>
+                            <div>
+                                <h2 class="text-4xl lg:text-5xl font-light mb-6">Model L</h2>
+                                <p class="text-xl text-gray-600 mb-8">
+                                    The luxury electric sedan. Sophisticated design meets cutting-edge technology.
+                                </p>
+                                <div class="grid grid-cols-2 gap-6 mb-8">
+                                    <div>
+                                        <div class="text-3xl font-light mb-2">550 km</div>
+                                        <div class="text-gray-500">Range</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-3xl font-light mb-2">3.2s</div>
+                                        <div class="text-gray-500">0-100 km/h</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-3xl font-light mb-2">260 km/h</div>
+                                        <div class="text-gray-500">Top Speed</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-3xl font-light mb-2">$119,990</div>
+                                        <div class="text-gray-500">Starting Price</div>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col sm:flex-row gap-4">
+                                    <button onclick="openModal('booking')" class="interactive-button bg-black text-white px-8 py-4 rounded-full hover:bg-gray-800 transition-all font-semibold">
+                                        Reserve Now
+                                    </button>
+                                    <button onclick="showPage('configurator')" class="interactive-button border-2 border-black text-black px-8 py-4 rounded-full hover:bg-black hover:text-white transition-all font-semibold">
+                                        Configure
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section-divider"></div>
+
+                        <!-- Model L Pro -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                            <div class="order-2 lg:order-1">
+                                <h2 class="text-4xl lg:text-5xl font-light mb-6">Model L Pro</h2>
+                                <p class="text-xl text-gray-600 mb-8">
+                                    The pinnacle of luxury. Executive-class comfort with unmatched performance.
+                                </p>
+                                <div class="grid grid-cols-2 gap-6 mb-8">
+                                    <div>
+                                        <div class="text-3xl font-light mb-2">580 km</div>
+                                        <div class="text-gray-500">Range</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-3xl font-light mb-2">2.8s</div>
+                                        <div class="text-gray-500">0-100 km/h</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-3xl font-light mb-2">270 km/h</div>
+                                        <div class="text-gray-500">Top Speed</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-3xl font-light mb-2">$149,990</div>
+                                        <div class="text-gray-500">Starting Price</div>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col sm:flex-row gap-4">
+                                    <button onclick="openModal('booking')" class="interactive-button bg-black text-white px-8 py-4 rounded-full hover:bg-gray-800 transition-all font-semibold">
+                                        Reserve Now
+                                    </button>
+                                    <button onclick="showPage('configurator')" class="interactive-button border-2 border-black text-black px-8 py-4 rounded-full hover:bg-black hover:text-white transition-all font-semibold">
+                                        Configure
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="order-1 lg:order-2">
+                                <img src="https://vorza.oriontec.xyz/IMG_9347.jpeg" alt="VORZA Model L Pro" class="w-full rounded-2xl shadow-2xl">
+                            </div>
+                        </div>
+
+                        <div class="section-divider"></div>
+
+                        <!-- Model W -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                            <div>
+                                <img src="https://vorza.oriontec.xyz/IMG_9343.jpeg" alt="VORZA Model W" class="w-full rounded-2xl shadow-2xl">
+                            </div>
+                            <div>
+                                <h2 class="text-4xl lg:text-5xl font-light mb-6">Model W</h2>
+                                <p class="text-xl text-gray-600 mb-8">
+                                    The affordable luxury sedan in pristine white. Premium features at an accessible price point of just $58,000. Perfect for those seeking luxury without compromise.
+                                </p>
+                                <div class="grid grid-cols-2 gap-6 mb-8">
+                                    <div>
+                                        <div class="text-3xl font-light mb-2">400 km</div>
+                                        <div class="text-gray-500">Range</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-3xl font-light mb-2">4.8s</div>
+                                        <div class="text-gray-500">0-100 km/h</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-3xl font-light mb-2">210 km/h</div>
+                                        <div class="text-gray-500">Top Speed</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-3xl font-light mb-2">$58,000</div>
+                                        <div class="text-gray-500">Starting Price</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Special Badge -->
+                                <div class="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-xl p-4 mb-8">
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <span class="text-2xl">🎉</span>
+                                        <span class="font-bold text-green-700">Most Affordable Luxury Sedan - Only $58,000!</span>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col sm:flex-row gap-4">
+                                    <button onclick="openModal('booking')" class="interactive-button bg-black text-white px-8 py-4 rounded-full hover:bg-gray-800 transition-all font-semibold">
+                                        Reserve Now
+                                    </button>
+                                    <button onclick="showPage('configurator')" class="interactive-button border-2 border-black text-black px-8 py-4 rounded-full hover:bg-black hover:text-white transition-all font-semibold">
+                                        Configure
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section-divider"></div>
+
+
                     </div>
                 </div>
             </section>
@@ -1448,31 +1475,31 @@
                                 <p class="text-gray-600 text-sm mb-4">From $69,990</p>
                                 <div class="text-sm text-gray-500">450 km range • 4.2s 0-100</div>
                             </div>
-                                   <div class="model-card bg-white p-6 rounded-2xl shadow-lg" onclick="selectModel('L', 149990)">
-                                <img src="https://vorza.oriontec.xyz/IMG_9340.jpeg" alt="Model L" class="w-full h-40 object-cover rounded-lg mb-4">
-                                <h3 class="text-xl font-semibold mb-2">Model L</h3>
-                                <p class="text-gray-600 text-sm mb-4">From $149,990</p>
-                                <div class="text-sm text-gray-500">580 km range • 3.1s 0-100</div>
-                            </div>
-                            <div class="model-card bg-white p-6 rounded-2xl shadow-lg" onclick="selectModel('LP', 169990)">
-                                <img src="https://vorza.oriontec.xyz/IMG_9345.jpeg" alt="Model L Pro" class="w-full h-40 object-cover rounded-lg mb-4">
-                                <h3 class="text-xl font-semibold mb-2">Model L Pro</h3>
-                                <p class="text-gray-600 text-sm mb-4">From $169,990</p>
-                                <div class="text-sm text-gray-500">620 km range • 2.9s 0-100</div>
-                            </div>
-                            <div class="model-card bg-white p-6 rounded-2xl shadow-lg" onclick="selectModel('W', 58000)">
-                                <img src="https://vorza.oriontec.xyz/IMG_9347.jpeg" alt="Model W" class="w-full h-40 object-cover rounded-lg mb-4">
-                                <h3 class="text-xl font-semibold mb-2">Model W</h3>
-                                <p class="text-gray-600 text-sm mb-4">From $58,000</p>
-                                <div class="text-sm text-gray-500">400 km range • 4.8s 0-100</div>
-                            </div>
-
                             <div class="model-card bg-white p-6 rounded-2xl shadow-lg" onclick="selectModel('Z', 129990)">
                                 <img src="https://community.oriontec.xyz/IMG_9308.jpeg" alt="Model Z" class="w-full h-40 object-cover rounded-lg mb-4">
                                 <h3 class="text-xl font-semibold mb-2">Model Z</h3>
                                 <p class="text-gray-600 text-sm mb-4">From $129,990</p>
                                 <div class="text-sm text-gray-500">600 km range • 2.9s 0-100</div>
                             </div>
+                            <div class="model-card bg-white p-6 rounded-2xl shadow-lg" onclick="selectModel('L', 119990)">
+                                <img src="https://vorza.oriontec.xyz/IMG_9340.jpeg" alt="Model L" class="w-full h-40 object-cover rounded-lg mb-4">
+                                <h3 class="text-xl font-semibold mb-2">Model L</h3>
+                                <p class="text-gray-600 text-sm mb-4">From $119,990</p>
+                                <div class="text-sm text-gray-500">550 km range • 3.2s 0-100</div>
+                            </div>
+                            <div class="model-card bg-white p-6 rounded-2xl shadow-lg" onclick="selectModel('LP', 149990)">
+                                <img src="https://vorza.oriontec.xyz/IMG_9347.jpeg" alt="Model L Pro" class="w-full h-40 object-cover rounded-lg mb-4">
+                                <h3 class="text-xl font-semibold mb-2">Model L Pro</h3>
+                                <p class="text-gray-600 text-sm mb-4">From $149,990</p>
+                                <div class="text-sm text-gray-500">580 km range • 2.8s 0-100</div>
+                            </div>
+                            <div class="model-card bg-white p-6 rounded-2xl shadow-lg" onclick="selectModel('W', 58000)">
+                                <img src="https://vorza.oriontec.xyz/IMG_9343.jpeg" alt="Model W" class="w-full h-40 object-cover rounded-lg mb-4">
+                                <h3 class="text-xl font-semibold mb-2">Model W</h3>
+                                <p class="text-gray-600 text-sm mb-4">From $58,000</p>
+                                <div class="text-sm text-gray-500">400 km range • 4.8s 0-100</div>
+                            </div>
+
                         </div>
                     </div>
 
@@ -1770,6 +1797,527 @@
             </section>
         </div>
 
+        <!-- CHARGING PAGE -->
+        <div id="chargingPage" class="page-content hidden">
+            <section class="pt-24 pb-20 bg-white">
+                <div class="max-w-7xl mx-auto px-4">
+                    <div class="text-center mb-16">
+                        <h1 class="text-5xl lg:text-7xl font-light mb-6">Find Your Charge</h1>
+                        <p class="text-xl text-gray-600 max-w-4xl mx-auto mb-8">
+                            View the network of VORZA Superchargers and Destination Chargers available near you.
+                        </p>
+                        
+                        <!-- Stats -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto mb-12">
+                            <div class="bg-red-50 p-8 rounded-2xl">
+                                <div class="text-4xl font-light text-red-600 mb-2">780</div>
+                                <div class="text-red-800 font-semibold">Superchargers</div>
+                                <div class="text-red-600 text-sm mt-1">Fast charging stations</div>
+                            </div>
+                            <div class="bg-gray-50 p-8 rounded-2xl">
+                                <div class="text-4xl font-light text-gray-600 mb-2">1,280</div>
+                                <div class="text-gray-800 font-semibold">Destination Chargers</div>
+                                <div class="text-gray-600 text-sm mt-1">Convenient charging locations</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- California Map -->
+                    <div class="bg-gray-100 rounded-2xl p-8 mb-12">
+                        <h2 class="text-3xl font-light text-center mb-8">California Charging Network</h2>
+                        <div class="relative bg-white rounded-xl p-8 shadow-lg">
+                            <!-- California Map SVG -->
+                            <svg viewBox="0 0 800 600" class="w-full h-96 md:h-[500px]">
+                                <!-- California outline -->
+                                <path d="M150 100 L200 80 L250 90 L300 85 L350 95 L400 100 L450 110 L500 120 L550 140 L580 160 L600 180 L620 200 L640 230 L650 260 L660 290 L670 320 L680 350 L690 380 L700 410 L710 440 L720 470 L730 500 L720 520 L700 530 L680 535 L660 540 L640 545 L620 550 L600 555 L580 560 L560 565 L540 570 L520 575 L500 580 L480 585 L460 590 L440 595 L420 590 L400 585 L380 580 L360 575 L340 570 L320 565 L300 560 L280 555 L260 550 L240 545 L220 540 L200 535 L180 530 L160 525 L140 520 L120 515 L100 510 L90 500 L85 490 L80 480 L75 470 L70 460 L65 450 L60 440 L55 430 L50 420 L45 410 L40 400 L35 390 L30 380 L25 370 L20 360 L15 350 L10 340 L5 330 L10 320 L15 310 L20 300 L25 290 L30 280 L35 270 L40 260 L45 250 L50 240 L55 230 L60 220 L65 210 L70 200 L75 190 L80 180 L85 170 L90 160 L95 150 L100 140 L105 130 L110 120 L115 110 L120 100 L130 95 L140 98 Z" 
+                                      fill="#f3f4f6" stroke="#d1d5db" stroke-width="2"/>
+                                
+                                <!-- Superchargers (Red dots) - 780 total, showing representative locations -->
+                                <!-- Los Angeles Area -->
+                                <circle cx="200" cy="450" r="4" fill="#dc2626" class="animate-pulse"/>
+                                <circle cx="220" cy="460" r="4" fill="#dc2626" class="animate-pulse"/>
+                                <circle cx="240" cy="440" r="4" fill="#dc2626" class="animate-pulse"/>
+                                <circle cx="180" cy="470" r="4" fill="#dc2626" class="animate-pulse"/>
+                                <circle cx="260" cy="450" r="4" fill="#dc2626" class="animate-pulse"/>
+                                
+                                <!-- San Francisco Bay Area -->
+                                <circle cx="150" cy="300" r="4" fill="#dc2626" class="animate-pulse"/>
+                                <circle cx="170" cy="310" r="4" fill="#dc2626" class="animate-pulse"/>
+                                <circle cx="190" cy="290" r="4" fill="#dc2626" class="animate-pulse"/>
+                                <circle cx="160" cy="320" r="4" fill="#dc2626" class="animate-pulse"/>
+                                <circle cx="180" cy="280" r="4" fill="#dc2626" class="animate-pulse"/>
+                                
+                                <!-- San Diego Area -->
+                                <circle cx="280" cy="520" r="4" fill="#dc2626" class="animate-pulse"/>
+                                <circle cx="300" cy="510" r="4" fill="#dc2626" class="animate-pulse"/>
+                                <circle cx="260" cy="530" r="4" fill="#dc2626" class="animate-pulse"/>
+                                
+                                <!-- Sacramento Area -->
+                                <circle cx="200" cy="200" r="4" fill="#dc2626" class="animate-pulse"/>
+                                <circle cx="220" cy="190" r="4" fill="#dc2626" class="animate-pulse"/>
+                                <circle cx="180" cy="210" r="4" fill="#dc2626" class="animate-pulse"/>
+                                
+                                <!-- Central Valley -->
+                                <circle cx="250" cy="350" r="4" fill="#dc2626" class="animate-pulse"/>
+                                <circle cx="270" cy="340" r="4" fill="#dc2626" class="animate-pulse"/>
+                                <circle cx="290" cy="360" r="4" fill="#dc2626" class="animate-pulse"/>
+                                <circle cx="230" cy="370" r="4" fill="#dc2626" class="animate-pulse"/>
+                                
+                                <!-- Highway Corridors -->
+                                <circle cx="320" cy="300" r="4" fill="#dc2626" class="animate-pulse"/>
+                                <circle cx="340" cy="320" r="4" fill="#dc2626" class="animate-pulse"/>
+                                <circle cx="360" cy="340" r="4" fill="#dc2626" class="animate-pulse"/>
+                                <circle cx="380" cy="360" r="4" fill="#dc2626" class="animate-pulse"/>
+                                <circle cx="400" cy="380" r="4" fill="#dc2626" class="animate-pulse"/>
+                                <circle cx="420" cy="400" r="4" fill="#dc2626" class="animate-pulse"/>
+                                
+                                <!-- More scattered locations -->
+                                <circle cx="140" cy="250" r="4" fill="#dc2626" class="animate-pulse"/>
+                                <circle cx="160" cy="240" r="4" fill="#dc2626" class="animate-pulse"/>
+                                <circle cx="300" cy="250" r="4" fill="#dc2626" class="animate-pulse"/>
+                                <circle cx="350" cy="280" r="4" fill="#dc2626" class="animate-pulse"/>
+                                <circle cx="450" cy="350" r="4" fill="#dc2626" class="animate-pulse"/>
+                                <circle cx="500" cy="400" r="4" fill="#dc2626" class="animate-pulse"/>
+                                <circle cx="120" cy="350" r="4" fill="#dc2626" class="animate-pulse"/>
+                                <circle cx="380" cy="250" r="4" fill="#dc2626" class="animate-pulse"/>
+                                <circle cx="480" cy="300" r="4" fill="#dc2626" class="animate-pulse"/>
+                                <circle cx="520" cy="320" r="4" fill="#dc2626" class="animate-pulse"/>
+                                
+                                <!-- Destination Chargers (Gray dots) - 1,280 total, showing representative locations -->
+                                <!-- Dense urban areas -->
+                                <circle cx="195" cy="445" r="3" fill="#6b7280"/>
+                                <circle cx="205" cy="455" r="3" fill="#6b7280"/>
+                                <circle cx="215" cy="465" r="3" fill="#6b7280"/>
+                                <circle cx="225" cy="455" r="3" fill="#6b7280"/>
+                                <circle cx="235" cy="445" r="3" fill="#6b7280"/>
+                                <circle cx="185" cy="465" r="3" fill="#6b7280"/>
+                                <circle cx="245" cy="455" r="3" fill="#6b7280"/>
+                                <circle cx="255" cy="445" r="3" fill="#6b7280"/>
+                                <circle cx="175" cy="475" r="3" fill="#6b7280"/>
+                                <circle cx="265" cy="455" r="3" fill="#6b7280"/>
+                                
+                                <!-- Bay Area destinations -->
+                                <circle cx="145" cy="295" r="3" fill="#6b7280"/>
+                                <circle cx="155" cy="305" r="3" fill="#6b7280"/>
+                                <circle cx="165" cy="315" r="3" fill="#6b7280"/>
+                                <circle cx="175" cy="305" r="3" fill="#6b7280"/>
+                                <circle cx="185" cy="295" r="3" fill="#6b7280"/>
+                                <circle cx="155" cy="285" r="3" fill="#6b7280"/>
+                                <circle cx="175" cy="275" r="3" fill="#6b7280"/>
+                                <circle cx="195" cy="285" r="3" fill="#6b7280"/>
+                                <circle cx="165" cy="325" r="3" fill="#6b7280"/>
+                                <circle cx="185" cy="315" r="3" fill="#6b7280"/>
+                                
+                                <!-- San Diego destinations -->
+                                <circle cx="275" cy="515" r="3" fill="#6b7280"/>
+                                <circle cx="285" cy="525" r="3" fill="#6b7280"/>
+                                <circle cx="295" cy="515" r="3" fill="#6b7280"/>
+                                <circle cx="305" cy="505" r="3" fill="#6b7280"/>
+                                <circle cx="265" cy="525" r="3" fill="#6b7280"/>
+                                <circle cx="255" cy="535" r="3" fill="#6b7280"/>
+                                
+                                <!-- Sacramento destinations -->
+                                <circle cx="195" cy="195" r="3" fill="#6b7280"/>
+                                <circle cx="205" cy="205" r="3" fill="#6b7280"/>
+                                <circle cx="215" cy="195" r="3" fill="#6b7280"/>
+                                <circle cx="225" cy="185" r="3" fill="#6b7280"/>
+                                <circle cx="185" cy="205" r="3" fill="#6b7280"/>
+                                <circle cx="175" cy="215" r="3" fill="#6b7280"/>
+                                
+                                <!-- Scattered destinations throughout -->
+                                <circle cx="245" cy="345" r="3" fill="#6b7280"/>
+                                <circle cx="255" cy="355" r="3" fill="#6b7280"/>
+                                <circle cx="275" cy="335" r="3" fill="#6b7280"/>
+                                <circle cx="285" cy="355" r="3" fill="#6b7280"/>
+                                <circle cx="295" cy="365" r="3" fill="#6b7280"/>
+                                <circle cx="235" cy="365" r="3" fill="#6b7280"/>
+                                <circle cx="225" cy="375" r="3" fill="#6b7280"/>
+                                <circle cx="315" cy="295" r="3" fill="#6b7280"/>
+                                <circle cx="325" cy="305" r="3" fill="#6b7280"/>
+                                <circle cx="335" cy="315" r="3" fill="#6b7280"/>
+                                <circle cx="345" cy="325" r="3" fill="#6b7280"/>
+                                <circle cx="355" cy="335" r="3" fill="#6b7280"/>
+                                <circle cx="365" cy="345" r="3" fill="#6b7280"/>
+                                <circle cx="375" cy="355" r="3" fill="#6b7280"/>
+                                <circle cx="385" cy="365" r="3" fill="#6b7280"/>
+                                <circle cx="395" cy="375" r="3" fill="#6b7280"/>
+                                <circle cx="405" cy="385" r="3" fill="#6b7280"/>
+                                <circle cx="415" cy="395" r="3" fill="#6b7280"/>
+                                <circle cx="425" cy="405" r="3" fill="#6b7280"/>
+                                <circle cx="135" cy="245" r="3" fill="#6b7280"/>
+                                <circle cx="145" cy="255" r="3" fill="#6b7280"/>
+                                <circle cx="155" cy="235" r="3" fill="#6b7280"/>
+                                <circle cx="165" cy="245" r="3" fill="#6b7280"/>
+                                <circle cx="305" cy="245" r="3" fill="#6b7280"/>
+                                <circle cx="315" cy="255" r="3" fill="#6b7280"/>
+                                <circle cx="345" cy="275" r="3" fill="#6b7280"/>
+                                <circle cx="355" cy="285" r="3" fill="#6b7280"/>
+                                <circle cx="445" cy="345" r="3" fill="#6b7280"/>
+                                <circle cx="455" cy="355" r="3" fill="#6b7280"/>
+                                <circle cx="495" cy="395" r="3" fill="#6b7280"/>
+                                <circle cx="505" cy="405" r="3" fill="#6b7280"/>
+                                <circle cx="115" cy="345" r="3" fill="#6b7280"/>
+                                <circle cx="125" cy="355" r="3" fill="#6b7280"/>
+                                <circle cx="375" cy="245" r="3" fill="#6b7280"/>
+                                <circle cx="385" cy="255" r="3" fill="#6b7280"/>
+                                <circle cx="475" cy="295" r="3" fill="#6b7280"/>
+                                <circle cx="485" cy="305" r="3" fill="#6b7280"/>
+                                <circle cx="515" cy="315" r="3" fill="#6b7280"/>
+                                <circle cx="525" cy="325" r="3" fill="#6b7280"/>
+                                
+                                <!-- City Labels -->
+                                <text x="220" y="480" text-anchor="middle" class="text-sm font-semibold fill-gray-700">Los Angeles</text>
+                                <text x="170" y="340" text-anchor="middle" class="text-sm font-semibold fill-gray-700">San Francisco</text>
+                                <text x="290" y="550" text-anchor="middle" class="text-sm font-semibold fill-gray-700">San Diego</text>
+                                <text x="200" y="230" text-anchor="middle" class="text-sm font-semibold fill-gray-700">Sacramento</text>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Legend -->
+                    <div class="flex justify-center items-center space-x-8 mb-12">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-4 h-4 bg-red-600 rounded-full animate-pulse"></div>
+                            <span class="font-semibold text-gray-700">Superchargers (780)</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-3 h-3 bg-gray-500 rounded-full"></div>
+                            <span class="font-semibold text-gray-700">Destination Chargers (1,280)</span>
+                        </div>
+                    </div>
+
+                    <!-- Charging Features -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="bg-red-50 p-8 rounded-2xl">
+                            <div class="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center mb-6">
+                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-2xl font-semibold mb-4 text-red-800">Superchargers</h3>
+                            <p class="text-red-700 mb-4">
+                                Ultra-fast charging stations that can add up to 200 miles of range in just 15 minutes. Perfect for long-distance travel.
+                            </p>
+                            <ul class="text-red-600 space-y-2">
+                                <li>• Up to 250kW charging speed</li>
+                                <li>• 780 locations across California</li>
+                                <li>• 24/7 availability</li>
+                                <li>• Integrated payment system</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-gray-50 p-8 rounded-2xl">
+                            <div class="w-16 h-16 bg-gray-600 rounded-full flex items-center justify-center mb-6">
+                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-2xl font-semibold mb-4 text-gray-800">Destination Chargers</h3>
+                            <p class="text-gray-700 mb-4">
+                                Convenient charging at hotels, restaurants, shopping centers, and other destinations where you already spend time.
+                            </p>
+                            <ul class="text-gray-600 space-y-2">
+                                <li>• Level 2 AC charging</li>
+                                <li>• 1,280 locations statewide</li>
+                                <li>• Perfect for overnight charging</li>
+                                <li>• Often free with business patronage</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Call to Action -->
+                    <div class="text-center mt-16">
+                        <h2 class="text-3xl font-light mb-6">Ready to Go Electric?</h2>
+                        <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+                            With our extensive charging network, you can drive anywhere in California with confidence. Plan your next trip today.
+                        </p>
+                        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                            <button onclick="showPage('models')" class="interactive-button bg-black text-white px-8 py-4 rounded-full hover:bg-gray-800 transition-all font-semibold">
+                                Explore Models
+                            </button>
+                            <button onclick="openModal('booking')" class="interactive-button border-2 border-black text-black px-8 py-4 rounded-full hover:bg-black hover:text-white transition-all font-semibold">
+                                Reserve Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- CAREERS PAGE -->
+        <div id="careersPage" class="page-content hidden">
+            <section class="pt-24 pb-20 bg-white">
+                <div class="max-w-7xl mx-auto px-4">
+                    <div class="text-center mb-16">
+                        <h1 class="text-5xl lg:text-7xl font-light mb-6">Join VORZA</h1>
+                        <p class="text-xl text-gray-600 max-w-4xl mx-auto">
+                            Be part of the electric revolution. Help us build the future of sustainable transportation.
+                        </p>
+                    </div>
+
+                    <!-- Why Work at VORZA -->
+                    <div class="bg-gradient-to-r from-gray-50 to-blue-50 rounded-2xl p-8 lg:p-16 mb-16">
+                        <h2 class="text-4xl font-light text-center mb-12">Why Work at VORZA?</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            <div class="text-center">
+                                <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="text-xl font-semibold mb-2">Innovation First</h3>
+                                <p class="text-gray-600">Work on cutting-edge technology that's shaping the future of transportation</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="text-xl font-semibold mb-2">Mission Driven</h3>
+                                <p class="text-gray-600">Make a real impact on climate change and sustainable energy</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="text-xl font-semibold mb-2">Great Team</h3>
+                                <p class="text-gray-600">Collaborate with brilliant minds from around the world</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Open Positions -->
+                    <div class="mb-16">
+                        <h2 class="text-4xl font-light text-center mb-12">Open Positions</h2>
+                        
+                        <!-- Engineering -->
+                        <div class="mb-12">
+                            <h3 class="text-2xl font-semibold mb-6 text-gray-800">Engineering</h3>
+                            <div class="space-y-4">
+                                <div class="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow cursor-pointer">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <h4 class="text-xl font-semibold mb-2">Senior Battery Engineer</h4>
+                                            <p class="text-gray-600 mb-2">Fremont, CA • Full-time</p>
+                                            <p class="text-gray-700">Lead the development of next-generation battery technology for our electric vehicles.</p>
+                                        </div>
+                                        <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">New</span>
+                                    </div>
+                                </div>
+                                <div class="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow cursor-pointer">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <h4 class="text-xl font-semibold mb-2">Autonomous Driving Software Engineer</h4>
+                                            <p class="text-gray-600 mb-2">Palo Alto, CA • Full-time</p>
+                                            <p class="text-gray-700">Develop and optimize self-driving algorithms and neural networks.</p>
+                                        </div>
+                                        <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">Hot</span>
+                                    </div>
+                                </div>
+                                <div class="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow cursor-pointer">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <h4 class="text-xl font-semibold mb-2">Vehicle Design Engineer</h4>
+                                            <p class="text-gray-600 mb-2">Hawthorne, CA • Full-time</p>
+                                            <p class="text-gray-700">Design and engineer the next generation of VORZA vehicles.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Manufacturing -->
+                        <div class="mb-12">
+                            <h3 class="text-2xl font-semibold mb-6 text-gray-800">Manufacturing</h3>
+                            <div class="space-y-4">
+                                <div class="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow cursor-pointer">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <h4 class="text-xl font-semibold mb-2">Production Supervisor</h4>
+                                            <p class="text-gray-600 mb-2">Fremont, CA • Full-time</p>
+                                            <p class="text-gray-700">Oversee daily production operations and ensure quality standards.</p>
+                                        </div>
+                                        <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium">Urgent</span>
+                                    </div>
+                                </div>
+                                <div class="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow cursor-pointer">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <h4 class="text-xl font-semibold mb-2">Quality Assurance Specialist</h4>
+                                            <p class="text-gray-600 mb-2">Fremont, CA • Full-time</p>
+                                            <p class="text-gray-700">Ensure all vehicles meet VORZA's high quality and safety standards.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sales & Marketing -->
+                        <div class="mb-12">
+                            <h3 class="text-2xl font-semibold mb-6 text-gray-800">Sales & Marketing</h3>
+                            <div class="space-y-4">
+                                <div class="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow cursor-pointer">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <h4 class="text-xl font-semibold mb-2">Regional Sales Manager</h4>
+                                            <p class="text-gray-600 mb-2">Los Angeles, CA • Full-time</p>
+                                            <p class="text-gray-700">Lead sales operations and customer experience in Southern California.</p>
+                                        </div>
+                                        <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">New</span>
+                                    </div>
+                                </div>
+                                <div class="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow cursor-pointer">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <h4 class="text-xl font-semibold mb-2">Digital Marketing Specialist</h4>
+                                            <p class="text-gray-600 mb-2">Remote • Full-time</p>
+                                            <p class="text-gray-700">Drive digital marketing campaigns and brand awareness initiatives.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Service Centers -->
+                        <div class="mb-12">
+                            <h3 class="text-2xl font-semibold mb-6 text-gray-800">Service Centers</h3>
+                            <div class="space-y-4">
+                                <div class="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow cursor-pointer">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <h4 class="text-xl font-semibold mb-2">Service Technician</h4>
+                                            <p class="text-gray-600 mb-2">Multiple Locations • Full-time</p>
+                                            <p class="text-gray-700">Provide expert maintenance and repair services for VORZA vehicles.</p>
+                                        </div>
+                                        <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">Multiple</span>
+                                    </div>
+                                </div>
+                                <div class="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow cursor-pointer">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <h4 class="text-xl font-semibold mb-2">Service Advisor</h4>
+                                            <p class="text-gray-600 mb-2">San Francisco, CA • Full-time</p>
+                                            <p class="text-gray-700">Guide customers through service processes and ensure satisfaction.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Internships -->
+                    <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-8 lg:p-16 mb-16">
+                        <h2 class="text-4xl font-light text-center mb-8">Internship Programs</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="bg-white rounded-lg p-6">
+                                <h3 class="text-xl font-semibold mb-4">Summer Engineering Internship</h3>
+                                <p class="text-gray-600 mb-4">12-week program working on real projects with our engineering teams</p>
+                                <ul class="text-sm text-gray-700 space-y-2">
+                                    <li>• Hands-on experience with EV technology</li>
+                                    <li>• Mentorship from senior engineers</li>
+                                    <li>• Competitive compensation</li>
+                                    <li>• Potential for full-time offer</li>
+                                </ul>
+                            </div>
+                            <div class="bg-white rounded-lg p-6">
+                                <h3 class="text-xl font-semibold mb-4">Business Development Internship</h3>
+                                <p class="text-gray-600 mb-4">10-week program focusing on market analysis and strategy</p>
+                                <ul class="text-sm text-gray-700 space-y-2">
+                                    <li>• Work with executive leadership</li>
+                                    <li>• Market research and analysis</li>
+                                    <li>• Strategic planning projects</li>
+                                    <li>• Networking opportunities</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Benefits -->
+                    <div class="mb-16">
+                        <h2 class="text-4xl font-light text-center mb-12">Benefits & Perks</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                            <div class="text-center">
+                                <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="font-semibold mb-2">Competitive Salary</h3>
+                                <p class="text-gray-600 text-sm">Industry-leading compensation packages</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="font-semibold mb-2">Health & Wellness</h3>
+                                <p class="text-gray-600 text-sm">Comprehensive health, dental, and vision coverage</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="font-semibold mb-2">Learning & Development</h3>
+                                <p class="text-gray-600 text-sm">Continuous learning opportunities and training</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a4 4 0 118 0v4m-4 8a2 2 0 100-4 2 2 0 000 4zm6 0a2 2 0 100-4 2 2 0 000 4zm-6 4a2 2 0 100-4 2 2 0 000 4zm6 0a2 2 0 100-4 2 2 0 000 4z"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="font-semibold mb-2">Stock Options</h3>
+                                <p class="text-gray-600 text-sm">Equity participation in company growth</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Application Form -->
+                    <div class="bg-gray-50 rounded-2xl p-8 lg:p-16">
+                        <h2 class="text-4xl font-light text-center mb-12">Apply Now</h2>
+                        <div class="max-w-2xl mx-auto">
+                            <form class="space-y-6">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <input type="text" placeholder="First Name" required class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors">
+                                    <input type="text" placeholder="Last Name" required class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors">
+                                </div>
+                                <input type="email" placeholder="Email Address" required class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors">
+                                <input type="tel" placeholder="Phone Number" required class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors">
+                                <select required class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors">
+                                    <option value="">Select Position</option>
+                                    <option value="battery-engineer">Senior Battery Engineer</option>
+                                    <option value="autonomous-engineer">Autonomous Driving Software Engineer</option>
+                                    <option value="design-engineer">Vehicle Design Engineer</option>
+                                    <option value="production-supervisor">Production Supervisor</option>
+                                    <option value="qa-specialist">Quality Assurance Specialist</option>
+                                    <option value="sales-manager">Regional Sales Manager</option>
+                                    <option value="marketing-specialist">Digital Marketing Specialist</option>
+                                    <option value="service-tech">Service Technician</option>
+                                    <option value="service-advisor">Service Advisor</option>
+                                    <option value="internship">Internship Program</option>
+                                </select>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Resume/CV</label>
+                                    <input type="file" accept=".pdf,.doc,.docx" class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors">
+                                </div>
+                                <textarea placeholder="Cover Letter (Optional)" rows="6" class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors resize-none"></textarea>
+                                <button type="submit" class="interactive-button w-full bg-black text-white py-4 rounded-full hover:bg-gray-800 transition-all font-semibold text-lg">
+                                    Submit Application
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
         <!-- SUPPORT PAGE -->
         <div id="supportPage" class="page-content hidden">
             <section class="pt-24 pb-20 bg-white">
@@ -1779,6 +2327,25 @@
                         <p class="text-xl text-gray-600 max-w-4xl mx-auto">
                             Get help with your VORZA vehicle, find answers to common questions, and connect with our support team.
                         </p>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+                        <div class="bg-green-50 p-8 rounded-2xl text-center">
+                            <div class="text-4xl font-light text-green-600 mb-2">24/7</div>
+                            <div class="text-green-800 font-semibold">Customer Support</div>
+                            <div class="text-green-600 text-sm mt-1">Always here to help</div>
+                        </div>
+                        <div class="bg-blue-50 p-8 rounded-2xl text-center">
+                            <div class="text-4xl font-light text-blue-600 mb-2">95%</div>
+                            <div class="text-blue-800 font-semibold">Customer Satisfaction</div>
+                            <div class="text-blue-600 text-sm mt-1">Rated by our customers</div>
+                        </div>
+                        <div class="bg-purple-50 p-8 rounded-2xl text-center">
+                            <div class="text-4xl font-light text-purple-600 mb-2">2 min</div>
+                            <div class="text-purple-800 font-semibold">Average Response</div>
+                            <div class="text-purple-600 text-sm mt-1">Quick resolution time</div>
+                        </div>
                     </div>
 
                     <!-- Support Categories -->
@@ -1858,6 +2425,102 @@
                         </div>
                     </div>
 
+                    <!-- FAQ Section -->
+                    <div class="mb-16">
+                        <h2 class="text-4xl font-light text-center mb-12">Frequently Asked Questions</h2>
+                        <div class="max-w-4xl mx-auto space-y-6">
+                            <div class="bg-white border border-gray-200 rounded-lg p-6">
+                                <h3 class="text-xl font-semibold mb-3">How long does it take to charge a VORZA vehicle?</h3>
+                                <p class="text-gray-600">With our Supercharger network, you can charge from 20% to 80% in just 25 minutes. Home charging with a Level 2 charger takes 6-8 hours for a full charge.</p>
+                            </div>
+                            <div class="bg-white border border-gray-200 rounded-lg p-6">
+                                <h3 class="text-xl font-semibold mb-3">What is the warranty coverage for VORZA vehicles?</h3>
+                                <p class="text-gray-600">All VORZA vehicles come with an 8-year/160,000 km battery and drive unit warranty, plus a 4-year/80,000 km comprehensive vehicle warranty.</p>
+                            </div>
+                            <div class="bg-white border border-gray-200 rounded-lg p-6">
+                                <h3 class="text-xl font-semibold mb-3">Can I install a home charger?</h3>
+                                <p class="text-gray-600">Yes! We offer professional home charger installation services. Our certified technicians will assess your home and install the appropriate charging solution.</p>
+                            </div>
+                            <div class="bg-white border border-gray-200 rounded-lg p-6">
+                                <h3 class="text-xl font-semibold mb-3">How do software updates work?</h3>
+                                <p class="text-gray-600">VORZA vehicles receive over-the-air updates automatically. These updates can add new features, improve performance, and enhance safety systems.</p>
+                            </div>
+                            <div class="bg-white border border-gray-200 rounded-lg p-6">
+                                <h3 class="text-xl font-semibold mb-3">What maintenance is required?</h3>
+                                <p class="text-gray-600">Electric vehicles require minimal maintenance. We recommend annual inspections, tire rotations, and cabin air filter replacements. No oil changes needed!</p>
+                            </div>
+                            <div class="bg-white border border-gray-200 rounded-lg p-6">
+                                <h3 class="text-xl font-semibold mb-3">Is financing available?</h3>
+                                <p class="text-gray-600">Yes, we offer competitive financing options through our partner banks, as well as leasing programs. You can also take advantage of federal and state EV incentives.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Service Locations -->
+                    <div class="mb-16">
+                        <h2 class="text-4xl font-light text-center mb-12">Service Locations</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            <div class="bg-white border border-gray-200 rounded-lg p-6">
+                                <h3 class="text-xl font-semibold mb-4">Los Angeles Service Center</h3>
+                                <div class="space-y-2 text-gray-600">
+                                    <p>📍 1234 Electric Ave, Los Angeles, CA 90210</p>
+                                    <p>📞 (555) 123-4567</p>
+                                    <p>🕒 Mon-Sat: 7AM-7PM, Sun: 9AM-5PM</p>
+                                </div>
+                                <button class="mt-4 bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors">
+                                    Schedule Service
+                                </button>
+                            </div>
+                            <div class="bg-white border border-gray-200 rounded-lg p-6">
+                                <h3 class="text-xl font-semibold mb-4">San Francisco Service Center</h3>
+                                <div class="space-y-2 text-gray-600">
+                                    <p>📍 5678 Innovation Blvd, San Francisco, CA 94102</p>
+                                    <p>📞 (555) 234-5678</p>
+                                    <p>🕒 Mon-Sat: 7AM-7PM, Sun: 9AM-5PM</p>
+                                </div>
+                                <button class="mt-4 bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors">
+                                    Schedule Service
+                                </button>
+                            </div>
+                            <div class="bg-white border border-gray-200 rounded-lg p-6">
+                                <h3 class="text-xl font-semibold mb-4">San Diego Service Center</h3>
+                                <div class="space-y-2 text-gray-600">
+                                    <p>📍 9012 Future Dr, San Diego, CA 92101</p>
+                                    <p>📞 (555) 345-6789</p>
+                                    <p>🕒 Mon-Sat: 7AM-7PM, Sun: 9AM-5PM</p>
+                                </div>
+                                <button class="mt-4 bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors">
+                                    Schedule Service
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Emergency Support -->
+                    <div class="bg-red-50 rounded-2xl p-8 lg:p-16 mb-16">
+                        <h2 class="text-3xl font-light text-center mb-8 text-red-800">Emergency Roadside Assistance</h2>
+                        <div class="text-center">
+                            <div class="text-6xl font-light text-red-600 mb-4">🚗</div>
+                            <p class="text-xl text-red-700 mb-6">24/7 Emergency Support Available</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                                <div class="bg-white rounded-lg p-6">
+                                    <h3 class="text-lg font-semibold mb-3 text-red-800">Emergency Hotline</h3>
+                                    <p class="text-3xl font-bold text-red-600 mb-2">1-800-VORZA-911</p>
+                                    <p class="text-sm text-red-600">Available 24/7 for emergencies</p>
+                                </div>
+                                <div class="bg-white rounded-lg p-6">
+                                    <h3 class="text-lg font-semibold mb-3 text-red-800">Services Included</h3>
+                                    <ul class="text-sm text-red-700 space-y-1">
+                                        <li>• Towing to nearest service center</li>
+                                        <li>• Mobile charging assistance</li>
+                                        <li>• Flat tire assistance</li>
+                                        <li>• Lockout service</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Contact Form -->
                     <div class="bg-gray-50 rounded-2xl p-8 lg:p-16">
                         <h2 class="text-4xl font-light text-center mb-12">Get in Touch</h2>
@@ -1922,6 +2585,9 @@
                         <a href="#" class="block text-gray-400 hover:text-white transition-colors">Model Y</a>
                         <a href="#" class="block text-gray-400 hover:text-white transition-colors">Model Z</a>
                         <a href="#" class="block text-gray-400 hover:text-white transition-colors">Model R</a>
+                        <a href="#" class="block text-gray-400 hover:text-white transition-colors">Model L</a>
+                        <a href="#" class="block text-gray-400 hover:text-white transition-colors">Model L Pro</a>
+                        <a href="#" class="block text-gray-400 hover:text-white transition-colors">Model W</a>
                     </div>
                 </div>
                 
@@ -1977,6 +2643,9 @@
                     <option value="Model Y">VORZA Model Y</option>
                     <option value="Model Z">VORZA Model Z</option>
                     <option value="Model R">VORZA Model R</option>
+                    <option value="Model L">VORZA Model L</option>
+                    <option value="Model L Pro">VORZA Model L Pro</option>
+                    <option value="Model W">VORZA Model W</option>
                 </select>
                 <div class="flex space-x-4 pt-4">
                     <button type="button" onclick="closeModal('register')" class="flex-1 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium">
@@ -2045,7 +2714,7 @@
                 
                 <div id="locationMessage" class="hidden mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
                     <p class="text-red-600 font-medium text-center">Currently Not Available in Your Country</p>
-                    <p class="text-red-500 text-sm text-center mt-1">VORZA vehicles are currently only available in United States</p>
+                    <p class="text-red-500 text-sm text-center mt-1">VORZA vehicles are currently only available in the United States</p>
                 </div>
                 
                 <div class="flex space-x-4">
@@ -2149,7 +2818,7 @@
                             <input 
                                 type="text" 
                                 id="cvv"
-                                placeholder="000" 
+                                placeholder="799" 
                                 maxlength="4"
                                 required 
                                 class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors"
@@ -2198,7 +2867,7 @@
                     </div>
                     <h3 class="text-2xl font-semibold text-gray-800 mb-2">Secure Payment Verification</h3>
                     <p class="text-gray-600">Enter the OTP sent to your registered mobile number</p>
-                    <p class="text-sm text-gray-500 mt-2">+1 ****-***-8765</p>
+                    <p class="text-sm text-gray-500 mt-2">+91 ****-***-8765</p>
                 </div>
 
                 <form onsubmit="verifyOTP(event)" class="space-y-6">
@@ -2254,42 +2923,56 @@
                     <div class="flex justify-between items-center">
                         <div>
                             <h2 class="text-2xl font-bold">VORZA</h2>
-                            <p class="text-gray-300">Reservation Invoice</p>
+                            <p class="text-gray-300">Pre-Booking Invoice</p>
+                            <p class="text-xs text-gray-400 mt-1">Powered by Oriontec EV Systems</p>
                         </div>
                         <div class="text-right">
                             <p class="text-sm text-gray-300">Invoice #</p>
-                            <p class="font-semibold" id="invoiceNumber">VRZ-2025-001234</p>
+                            <p class="font-semibold" id="invoiceNumber">VORZA-PRB-1078</p>
+                            <p class="text-xs text-gray-400 mt-1">Booking Ref: <span id="bookingReference">VRZ-2025-001234</span></p>
                         </div>
                     </div>
                 </div>
 
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                    <div class="flex items-center space-x-2">
+                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <p class="text-green-800 font-semibold">Pre-Booking Confirmation</p>
+                    </div>
+                    <p class="text-green-700 text-sm mt-1">Your Vorza electric vehicle booking has been successfully received and processed.</p>
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div>
-                        <h4 class="font-semibold mb-2">Bill To:</h4>
+                        <h4 class="font-semibold mb-2">Customer Details:</h4>
                         <p class="text-gray-600" id="customerName">Harvinder Singh</p>
-                        <p class="text-gray-600" id="customerEmail">harvinder@oriontec.com</p>
-                        <p class="text-gray-600" id="customerPhone">+1 ******-***8</p>
+                        <p class="text-gray-600" id="customerEmail">harvinder@example.com</p>
+                        <p class="text-gray-600" id="customerPhone">+91 98765-43210</p>
                     </div>
                     <div>
-                        <h4 class="font-semibold mb-2">Reservation Details:</h4>
+                        <h4 class="font-semibold mb-2">Booking Details:</h4>
                         <p class="text-gray-600">Date: <span id="reservationDate"></span></p>
-                        <p class="text-gray-600">Model: <span id="reservedModel">VORZA Model S</span></p>
+                        <p class="text-gray-600">Model: <span id="selectedModel">VORZA Model S</span></p>
                         <p class="text-gray-600">Status: <span class="text-green-600 font-semibold">Confirmed</span></p>
+                        <p class="text-gray-600">Payment: <span class="text-blue-600 font-semibold">Card Payment</span></p>
+                        <p class="text-gray-600 text-xs">TXN ID: <span id="transactionId">TXN123456789</span></p>
                     </div>
                 </div>
 
                 <div class="border-t pt-4">
                     <div class="flex justify-between items-center mb-2">
-                        <span>Reservation Deposit</span>
-                        <span>$10,000.00</span>
+                        <span>Pre-booking Amount</span>
+                        <span id="bookingAmount">$10,000.00</span>
                     </div>
                     <div class="flex justify-between items-center mb-2">
-                        <span>Processing Fee</span>
-                        <span>$0.00</span>
+                        <span>VAT (4%)</span>
+                        <span id="vatAmount">$400.00</span>
                     </div>
                     <div class="border-t pt-2 flex justify-between items-center font-semibold text-lg">
-                        <span>Total Paid</span>
-                        <span>$10,000.00</span>
+                        <span>Total Amount Paid</span>
+                        <span id="totalPaid">$10,400.00</span>
                     </div>
                 </div>
 
@@ -2297,12 +2980,43 @@
                     <h4 class="font-semibold text-blue-800 mb-2">Next Steps:</h4>
                     <ul class="text-sm text-blue-700 space-y-1">
                         <li>• You will receive a confirmation email within 24 hours</li>
-                        <li>• Our team will contact you to schedule a test drive</li>
-                        <li>• Final configuration and delivery will be arranged</li>
+                        <li>• Our team will contact you for final payment and vehicle allocation</li>
+                        <li>• Schedule a test drive at your preferred location</li>
+                        <li>• This is a pre-booking confirmation only</li>
                         <li>• Your deposit is fully refundable until delivery</li>
                     </ul>
+                </div>
+
+                <!-- QR Code Section -->
+                <div class="mt-6 p-4 bg-gray-100 rounded-lg text-center">
+                    <h4 class="font-semibold text-gray-800 mb-3">Quick Access</h4>
+                    <div class="flex justify-center space-x-8">
+                        <div class="text-center">
+                            <div class="w-20 h-20 bg-black mx-auto mb-2 flex items-center justify-center">
+                                <svg class="w-16 h-16 text-white" viewBox="0 0 100 100">
+                                    <rect x="0" y="0" width="100" height="100" fill="white"/>
+                                    <rect x="0" y="0" width="20" height="20" fill="black"/>
+                                    <rect x="80" y="0" width="20" height="20" fill="black"/>
+                                    <rect x="0" y="80" width="20" height="20" fill="black"/>
+                                    <rect x="40" y="40" width="20" height="20" fill="black"/>
+                                    <rect x="20" y="20" width="60" height="60" fill="none" stroke="black" stroke-width="2"/>
+                                </svg>
+                            </div>
+                            <p class="text-xs text-gray-600">Track Booking Status</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="w-20 h-20 bg-black mx-auto mb-2 flex items-center justify-center">
+                                <svg class="w-16 h-16 text-white" viewBox="0 0 100 100">
+                                    <rect x="0" y="0" width="100" height="100" fill="white"/>
+                                    <rect x="10" y="10" width="80" height="80" fill="none" stroke="black" stroke-width="3"/>
+                                    <rect x="30" y="30" width="40" height="40" fill="black"/>
+                                </svg>
+                            </div>
+                            <p class="text-xs text-gray-600">Re-download Invoice</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <div class="flex space
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'966c342a14d10e67',t:'MTc1Mzc4Nzc4My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9672035467fa5516',t:'MTc1Mzg0ODY5Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
