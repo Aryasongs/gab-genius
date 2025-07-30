@@ -40,6 +40,18 @@
             return Math.floor(100000 + Math.random() * 900000).toString();
         }
 
+        function maskPhoneNumber(phone) {
+            // Show first 3 digits and last 4 digits, mask the rest
+            if (phone.length >= 10) {
+                const cleaned = phone.replace(/\D/g, '');
+                const first3 = cleaned.substring(0, 3);
+                const last4 = cleaned.substring(cleaned.length - 4);
+                const middle = '*'.repeat(cleaned.length - 7);
+                return `${first3}${middle}${last4}`;
+            }
+            return phone;
+        }
+
         function generateBookingReference() {
             const year = new Date().getFullYear();
             const randomNum = Math.floor(100000 + Math.random() * 900000);
@@ -115,6 +127,41 @@
             printWindow.document.close();
         }
 
+        // Generate shareable invoice link
+        function generateInvoiceLink() {
+            const customerNameForUrl = currentBookingData.customerName.toLowerCase().replace(/\s+/g, '');
+            const invoiceId = currentBookingData.invoiceNumber;
+            return `${window.location.origin}${window.location.pathname}#invoice-${customerNameForUrl}-${invoiceId}`;
+        }
+
+        // Share invoice function
+        function shareInvoice() {
+            const shareUrl = generateInvoiceLink();
+            const shareData = {
+                title: `VORZA Invoice - ${currentBookingData.invoiceNumber}`,
+                text: `My VORZA booking confirmation for ${currentBookingData.customerName}`,
+                url: shareUrl
+            };
+
+            if (navigator.share) {
+                navigator.share(shareData);
+            } else {
+                // Fallback: copy to clipboard
+                navigator.clipboard.writeText(shareUrl).then(() => {
+                    showNotification('Success', 'Invoice link copied to clipboard!', 'success');
+                }).catch(() => {
+                    // Fallback for older browsers
+                    const textArea = document.createElement('textarea');
+                    textArea.value = shareUrl;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    showNotification('Success', 'Invoice link copied to clipboard!', 'success');
+                });
+            }
+        }
+
         // Page Navigation
         function showPage(page) {
             // Hide all pages
@@ -165,7 +212,7 @@
                     checkUserLocation();
                 } else if (modalType === 'bank') {
                     // Update bank modal with user-specific data
-                    const maskedPhone = currentBookingData.phone.replace(/(\d{2})\d{4}(\d{4})/, '$1****$2');
+                    const maskedPhone = maskPhoneNumber(currentBookingData.phone);
                     document.getElementById('maskedPhone').textContent = maskedPhone;
                     document.getElementById('otpHint').textContent = `OTP: ${currentBookingData.otpCode}`;
                 }
@@ -333,8 +380,8 @@
             let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
             input.value = formattedValue;
             
-            // Auto-fill cardholder name when user starts typing card number
-            if (value.length > 0) {
+            // Auto-fill cardholder name only when full card number is entered (16 digits)
+            if (value.length === 16) {
                 const cardholderNameInput = document.getElementById('cardholderName');
                 if (cardholderNameInput && cardholderNameInput.value === '') {
                     cardholderNameInput.value = 'Harvinder Singh';
@@ -439,7 +486,7 @@
             document.getElementById('reservationDate').textContent = currentBookingData.bookingDate.toLocaleDateString();
             document.getElementById('customerName').textContent = currentBookingData.customerName;
             document.getElementById('customerEmail').textContent = currentBookingData.email;
-            document.getElementById('customerPhone').textContent = currentBookingData.phone;
+            document.getElementById('customerPhone').textContent = maskPhoneNumber(currentBookingData.phone);
             document.getElementById('customerCountry').textContent = currentBookingData.country;
             document.getElementById('customerIP').textContent = currentBookingData.ipAddress;
             document.getElementById('selectedModel').textContent = 'VORZA Model ' + currentBookingData.model;
@@ -885,31 +932,80 @@
         }
         
         .bank-page {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #e31837;
             min-height: 100vh;
+            font-family: 'Arial', sans-serif;
         }
         
         .bank-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 16px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border: 1px solid #d1d5db;
+        }
+        
+        .boa-header {
+            background: #e31837;
+            color: white;
+            padding: 20px;
+            border-radius: 8px 8px 0 0;
+            text-align: center;
+        }
+        
+        .boa-logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .boa-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
         }
         
         .otp-input {
-            width: 50px;
-            height: 50px;
+            width: 45px;
+            height: 45px;
             text-align: center;
-            font-size: 18px;
+            font-size: 20px;
             font-weight: bold;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            transition: all 0.3s ease;
+            border: 2px solid #d1d5db;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            background: #f9fafb;
         }
         
         .otp-input:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            border-color: #e31837;
+            box-shadow: 0 0 0 2px rgba(227, 24, 55, 0.1);
+            background: white;
+            outline: none;
+        }
+        
+        .boa-button {
+            background: #e31837;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        
+        .boa-button:hover {
+            background: #c41230;
+        }
+        
+        .boa-link {
+            color: #e31837;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .boa-link:hover {
+            text-decoration: underline;
         }
         
         .loading-spinner {
@@ -2997,43 +3093,61 @@
     <!-- Bank OTP Modal -->
     <div id="bankModal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
         <div class="bank-page w-full h-full flex items-center justify-center">
-            <div class="bank-card p-8 max-w-md w-full">
-                <div class="text-center mb-8">
-                    <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-2xl font-semibold text-gray-800 mb-2">Secure Payment Verification</h3>
-                    <p class="text-gray-600">Enter the OTP sent to your registered mobile number</p>
-                    <p class="text-sm text-gray-500 mt-2" id="maskedPhone">+** ****-***-****</p>
-                    <p class="text-xs text-blue-600 mt-2" id="otpHint">OTP: Loading...</p>
+            <div class="bank-card max-w-lg w-full">
+                <div class="boa-header">
+                    <div class="boa-logo">Bank of America</div>
+                    <div class="boa-subtitle">Secure Online Banking</div>
                 </div>
-
-                <form onsubmit="verifyOTP(event)" class="space-y-6">
-                    <div class="flex justify-center space-x-3">
-                        <input type="text" maxlength="1" class="otp-input" oninput="moveToNext(this, 0)" onkeydown="moveToPrev(this, event)">
-                        <input type="text" maxlength="1" class="otp-input" oninput="moveToNext(this, 1)" onkeydown="moveToPrev(this, event)">
-                        <input type="text" maxlength="1" class="otp-input" oninput="moveToNext(this, 2)" onkeydown="moveToPrev(this, event)">
-                        <input type="text" maxlength="1" class="otp-input" oninput="moveToNext(this, 3)" onkeydown="moveToPrev(this, event)">
-                        <input type="text" maxlength="1" class="otp-input" oninput="moveToNext(this, 4)" onkeydown="moveToPrev(this, event)">
-                        <input type="text" maxlength="1" class="otp-input" oninput="moveToNext(this, 5)" onkeydown="moveToPrev(this, event)">
+                
+                <div class="p-8">
+                    <div class="text-center mb-8">
+                        <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Verify Your Identity</h3>
+                        <p class="text-gray-600 text-sm">We sent a secure code to your mobile device</p>
+                        <p class="text-sm text-gray-700 mt-3 font-medium" id="maskedPhone">+** ****-***-****</p>
+                        <div class="bg-yellow-50 border border-yellow-200 rounded-md p-3 mt-4">
+                            <p class="text-xs text-yellow-800 font-medium">For testing: <span id="otpHint" class="font-bold">OTP: Loading...</span></p>
+                        </div>
                     </div>
 
-                    <div class="text-center">
-                        <p class="text-sm text-gray-600 mb-4">Didn't receive the code?</p>
-                        <button type="button" class="text-blue-600 hover:text-blue-700 font-medium text-sm">Resend OTP</button>
+                    <form onsubmit="verifyOTP(event)" class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">Enter 6-digit security code</label>
+                            <div class="flex justify-center space-x-2">
+                                <input type="text" maxlength="1" class="otp-input" oninput="moveToNext(this, 0)" onkeydown="moveToPrev(this, event)">
+                                <input type="text" maxlength="1" class="otp-input" oninput="moveToNext(this, 1)" onkeydown="moveToPrev(this, event)">
+                                <input type="text" maxlength="1" class="otp-input" oninput="moveToNext(this, 2)" onkeydown="moveToPrev(this, event)">
+                                <input type="text" maxlength="1" class="otp-input" oninput="moveToNext(this, 3)" onkeydown="moveToPrev(this, event)">
+                                <input type="text" maxlength="1" class="otp-input" oninput="moveToNext(this, 4)" onkeydown="moveToPrev(this, event)">
+                                <input type="text" maxlength="1" class="otp-input" oninput="moveToNext(this, 5)" onkeydown="moveToPrev(this, event)">
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <p class="text-sm text-gray-600 mb-3">Didn't receive a code?</p>
+                            <button type="button" class="boa-link text-sm">Send me a new code</button>
+                        </div>
+
+                        <button type="submit" class="w-full boa-button py-3">
+                            Continue
+                        </button>
+                    </form>
+
+                    <div class="mt-6 pt-6 border-t border-gray-200">
+                        <div class="flex items-center justify-center space-x-2 text-xs text-gray-500">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                            </svg>
+                            <span>Your information is protected with 256-bit SSL encryption</span>
+                        </div>
+                        <div class="text-center mt-2">
+                            <span class="text-xs text-gray-400">© 2025 Bank of America Corporation</span>
+                        </div>
                     </div>
-
-                    <button type="submit" class="w-full bg-blue-600 text-white py-4 rounded-lg hover:bg-blue-700 transition-colors font-semibold">
-                        Verify & Complete Payment
-                    </button>
-                </form>
-
-                <div class="mt-6 text-center">
-                    <p class="text-xs text-gray-500">
-                        This is a secure SSL encrypted payment. Your card details are safe.
-                    </p>
                 </div>
             </div>
         </div>
@@ -3213,13 +3327,13 @@
                     </svg>
                     Print Invoice
                 </button>
-                <button onclick="navigator.share ? navigator.share({title: 'VORZA Booking Confirmation', text: 'My VORZA booking is confirmed!', url: window.location.href}) : alert('Sharing not supported')" class="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors font-semibold flex items-center justify-center">
+                <button onclick="shareInvoice()" class="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors font-semibold flex items-center justify-center">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"></path>
                     </svg>
-                    Share Booking
+                    Share Invoice
                 </button>
             </div>
 
             <div class="flex space
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9672351f53a74457',t:'MTc1Mzg1MDczNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96724a5350f25954',t:'MTc1Mzg1MTYwNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
