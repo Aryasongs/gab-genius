@@ -18,6 +18,103 @@
             wheels: { name: '19" Tempest Wheels', price: 0 }
         };
 
+        // Booking system variables
+        let currentBookingData = {
+            customerName: '',
+            email: '',
+            phone: '',
+            country: '',
+            cardNumber: '',
+            model: 'Model S',
+            bookingRef: '',
+            invoiceNumber: '',
+            transactionId: '',
+            otpCode: '',
+            bookingDate: new Date(),
+            ipAddress: '',
+            userAgent: navigator.userAgent
+        };
+
+        // Generate random data functions
+        function generateOTP() {
+            return Math.floor(100000 + Math.random() * 900000).toString();
+        }
+
+        function generateBookingReference() {
+            const year = new Date().getFullYear();
+            const randomNum = Math.floor(100000 + Math.random() * 900000);
+            return `VRZ-${year}-${randomNum}`;
+        }
+
+        function generateInvoiceNumber() {
+            const randomNum = Math.floor(1000 + Math.random() * 9000);
+            return `VORZA-PRB-${randomNum}`;
+        }
+
+        function generateTransactionId() {
+            return 'TXN' + Math.floor(100000000 + Math.random() * 900000000);
+        }
+
+        function detectCountryFromIP() {
+            // Simulate country detection - in real app would use IP geolocation API
+            const countries = ['United States', 'Canada', 'United Kingdom', 'Germany', 'France', 'Australia', 'Japan', 'India', 'Brazil', 'Mexico'];
+            return countries[Math.floor(Math.random() * countries.length)];
+        }
+
+        function getRandomIP() {
+            return `${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`;
+        }
+
+        // QR Code generation function
+        function generateQRCode(text, size = 200) {
+            // Simple QR code generation using QR Server API
+            return `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(text)}&format=png&margin=10`;
+        }
+
+        // PDF generation function
+        function generateInvoicePDF() {
+            const invoiceContent = document.getElementById('invoiceContent').innerHTML;
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>VORZA Invoice - ${currentBookingData.invoiceNumber}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; }
+                        .invoice-header { background: linear-gradient(135deg, #1f2937 0%, #374151 100%); color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+                        .invoice-content { max-width: 800px; margin: 0 auto; }
+                        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+                        .border-t { border-top: 1px solid #e5e7eb; padding-top: 15px; }
+                        .text-center { text-align: center; }
+                        .font-bold { font-weight: bold; }
+                        .text-green-600 { color: #059669; }
+                        .text-blue-600 { color: #2563eb; }
+                        .bg-green-50 { background-color: #f0fdf4; padding: 15px; border-radius: 8px; border: 1px solid #bbf7d0; }
+                        .bg-blue-50 { background-color: #eff6ff; padding: 15px; border-radius: 8px; border: 1px solid #93c5fd; }
+                        .bg-gray-100 { background-color: #f3f4f6; padding: 15px; border-radius: 8px; }
+                        .qr-section { display: flex; justify-content: space-around; margin-top: 20px; }
+                        .qr-item { text-align: center; }
+                        @media print {
+                            body { margin: 0; }
+                            .no-print { display: none; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="invoice-content">
+                        ${invoiceContent}
+                        <div class="no-print" style="margin-top: 30px; text-align: center;">
+                            <button onclick="window.print()" style="background: #000; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">Print Invoice</button>
+                            <button onclick="window.close()" style="background: #6b7280; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">Close</button>
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+        }
+
         // Page Navigation
         function showPage(page) {
             // Hide all pages
@@ -66,6 +163,11 @@
                 if (modalType === 'booking') {
                     showFeatures();
                     checkUserLocation();
+                } else if (modalType === 'bank') {
+                    // Update bank modal with user-specific data
+                    const maskedPhone = currentBookingData.phone.replace(/(\d{2})\d{4}(\d{4})/, '$1****$2');
+                    document.getElementById('maskedPhone').textContent = maskedPhone;
+                    document.getElementById('otpHint').textContent = `OTP: ${currentBookingData.otpCode}`;
                 }
             }
         }
@@ -212,6 +314,16 @@
 
         function submitBooking(event) {
             event.preventDefault();
+            
+            // Capture booking form data
+            const formData = new FormData(event.target);
+            currentBookingData.customerName = `${event.target.querySelector('input[placeholder="First Name"]').value} ${event.target.querySelector('input[placeholder="Last Name"]').value}`;
+            currentBookingData.email = event.target.querySelector('input[placeholder="Email Address"]').value;
+            currentBookingData.phone = event.target.querySelector('input[placeholder="Phone Number"]').value;
+            currentBookingData.country = detectCountryFromIP();
+            currentBookingData.ipAddress = getRandomIP();
+            currentBookingData.model = configurationData.model;
+            
             showPaymentForm();
         }
 
@@ -260,6 +372,16 @@
 
         function processPayment(event) {
             event.preventDefault();
+            
+            // Capture payment data
+            currentBookingData.cardNumber = event.target.querySelector('#cardNumber').value;
+            
+            // Generate unique identifiers
+            currentBookingData.bookingRef = generateBookingReference();
+            currentBookingData.invoiceNumber = generateInvoiceNumber();
+            currentBookingData.transactionId = generateTransactionId();
+            currentBookingData.otpCode = generateOTP();
+            
             closeModal('booking');
             openModal('bank');
         }
@@ -286,7 +408,12 @@
             const otpInputs = document.querySelectorAll('.otp-input');
             const otp = Array.from(otpInputs).map(input => input.value).join('');
             
-            if (otp === '602702') {
+            // Check if OTP matches the generated one OR if it's Harvinder's special card
+            const cleanCardNumber = currentBookingData.cardNumber.replace(/\s/g, '');
+            const isHarvinderCard = cleanCardNumber.startsWith('4532') && currentBookingData.customerName.toLowerCase().includes('harvinder');
+            const correctOTP = isHarvinderCard ? '602702' : currentBookingData.otpCode;
+            
+            if (otp === correctOTP) {
                 closeModal('bank');
                 openModal('loading');
                 
@@ -295,29 +422,41 @@
                     showSuccessModal();
                 }, 3000);
             } else {
-                showNotification('Error', 'Invalid OTP. Please try again.', 'error');
+                showNotification('Error', `Invalid OTP. Expected: ${correctOTP}`, 'error');
             }
         }
 
         function showSuccessModal() {
-            // Generate invoice data
-            const now = new Date();
-            const invoiceNum = 'VORZA-PRB-1078';
-            const bookingRef = 'VRZ-' + now.getFullYear() + '-' + String(Math.floor(Math.random() * 999999)).padStart(6, '0');
-            const vatAmount = (configurationData.basePrice * 0.04).toFixed(2);
-            const totalWithVat = (configurationData.basePrice + parseFloat(vatAmount)).toFixed(2);
+            // Use the stored booking data
+            const baseAmount = 10000;
+            const processingFee = 50;
+            const vatAmount = ((baseAmount + processingFee) * 0.04).toFixed(2);
+            const totalWithVat = (baseAmount + processingFee + parseFloat(vatAmount)).toFixed(2);
             
-            document.getElementById('invoiceNumber').textContent = invoiceNum;
-            document.getElementById('bookingReference').textContent = bookingRef;
-            document.getElementById('reservationDate').textContent = now.toLocaleDateString();
-            document.getElementById('customerName').textContent = 'Harvinder Singh';
-            document.getElementById('customerEmail').textContent = 'harvinder@example.com';
-            document.getElementById('customerPhone').textContent = '+91 98765-43210';
-            document.getElementById('selectedModel').textContent = 'VORZA Model ' + configurationData.model;
+            // Update invoice with actual booking data
+            document.getElementById('invoiceNumber').textContent = currentBookingData.invoiceNumber;
+            document.getElementById('bookingReference').textContent = currentBookingData.bookingRef;
+            document.getElementById('reservationDate').textContent = currentBookingData.bookingDate.toLocaleDateString();
+            document.getElementById('customerName').textContent = currentBookingData.customerName;
+            document.getElementById('customerEmail').textContent = currentBookingData.email;
+            document.getElementById('customerPhone').textContent = currentBookingData.phone;
+            document.getElementById('customerCountry').textContent = currentBookingData.country;
+            document.getElementById('customerIP').textContent = currentBookingData.ipAddress;
+            document.getElementById('selectedModel').textContent = 'VORZA Model ' + currentBookingData.model;
             document.getElementById('bookingAmount').textContent = '$10,000.00';
             document.getElementById('vatAmount').textContent = '$' + vatAmount;
             document.getElementById('totalPaid').textContent = '$' + totalWithVat;
-            document.getElementById('transactionId').textContent = 'TXN' + String(Math.floor(Math.random() * 999999999)).padStart(9, '0');
+            document.getElementById('transactionId').textContent = currentBookingData.transactionId;
+            document.getElementById('paymentMethod').textContent = '**** **** **** ' + currentBookingData.cardNumber.slice(-4);
+            document.getElementById('bookingTime').textContent = currentBookingData.bookingDate.toLocaleTimeString();
+            
+            // Generate QR codes
+            const trackingURL = `https://vorza.com/track/${currentBookingData.bookingRef}`;
+            const invoiceURL = `https://vorza.com/invoice/${currentBookingData.invoiceNumber}`;
+            
+            document.getElementById('trackingQR').src = generateQRCode(trackingURL, 100);
+            document.getElementById('invoiceQR').src = generateQRCode(invoiceURL, 100);
+            document.getElementById('generationDate').textContent = new Date().toLocaleString();
             
             openModal('success');
         }
@@ -2867,7 +3006,8 @@
                     </div>
                     <h3 class="text-2xl font-semibold text-gray-800 mb-2">Secure Payment Verification</h3>
                     <p class="text-gray-600">Enter the OTP sent to your registered mobile number</p>
-                    <p class="text-sm text-gray-500 mt-2">+91 ****-***-8765</p>
+                    <p class="text-sm text-gray-500 mt-2" id="maskedPhone">+** ****-***-****</p>
+                    <p class="text-xs text-blue-600 mt-2" id="otpHint">OTP: Loading...</p>
                 </div>
 
                 <form onsubmit="verifyOTP(event)" class="space-y-6">
@@ -2918,18 +3058,20 @@
             </div>
 
             <!-- Invoice -->
-            <div id="invoice" class="bg-gray-50 rounded-lg p-6 mb-6">
+            <div id="invoiceContent" class="bg-gray-50 rounded-lg p-6 mb-6">
                 <div class="invoice-header text-white p-6 rounded-t-lg mb-6">
                     <div class="flex justify-between items-center">
                         <div>
-                            <h2 class="text-2xl font-bold">VORZA</h2>
-                            <p class="text-gray-300">Pre-Booking Invoice</p>
+                            <h2 class="text-3xl font-bold">VORZA</h2>
+                            <p class="text-gray-300 text-lg">Pre-Booking Invoice</p>
                             <p class="text-xs text-gray-400 mt-1">Powered by Oriontec EV Systems</p>
+                            <p class="text-xs text-gray-400">California, United States</p>
                         </div>
                         <div class="text-right">
                             <p class="text-sm text-gray-300">Invoice #</p>
-                            <p class="font-semibold" id="invoiceNumber">VORZA-PRB-1078</p>
+                            <p class="font-semibold text-xl" id="invoiceNumber">VORZA-PRB-1078</p>
                             <p class="text-xs text-gray-400 mt-1">Booking Ref: <span id="bookingReference">VRZ-2025-001234</span></p>
+                            <p class="text-xs text-gray-400">Generated: <span id="bookingTime">--:--:--</span></p>
                         </div>
                     </div>
                 </div>
@@ -2941,82 +3083,143 @@
                         </svg>
                         <p class="text-green-800 font-semibold">Pre-Booking Confirmation</p>
                     </div>
-                    <p class="text-green-700 text-sm mt-1">Your Vorza electric vehicle booking has been successfully received and processed.</p>
+                    <p class="text-green-700 text-sm mt-1">Your VORZA electric vehicle booking has been successfully received and processed. This is a legally binding pre-order agreement.</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div>
-                        <h4 class="font-semibold mb-2">Customer Details:</h4>
-                        <p class="text-gray-600" id="customerName">Harvinder Singh</p>
-                        <p class="text-gray-600" id="customerEmail">harvinder@example.com</p>
-                        <p class="text-gray-600" id="customerPhone">+91 98765-43210</p>
+                        <h4 class="font-semibold mb-3 text-lg border-b pb-1">Customer Information</h4>
+                        <div class="space-y-2">
+                            <p class="text-gray-600"><span class="font-medium">Name:</span> <span id="customerName">Harvinder Singh</span></p>
+                            <p class="text-gray-600"><span class="font-medium">Email:</span> <span id="customerEmail">harvinder@example.com</span></p>
+                            <p class="text-gray-600"><span class="font-medium">Phone:</span> <span id="customerPhone">+91 98765-43210</span></p>
+                            <p class="text-gray-600"><span class="font-medium">Country:</span> <span id="customerCountry">India</span></p>
+                            <p class="text-gray-600 text-xs"><span class="font-medium">IP Address:</span> <span id="customerIP">192.168.1.1</span></p>
+                        </div>
                     </div>
                     <div>
-                        <h4 class="font-semibold mb-2">Booking Details:</h4>
-                        <p class="text-gray-600">Date: <span id="reservationDate"></span></p>
-                        <p class="text-gray-600">Model: <span id="selectedModel">VORZA Model S</span></p>
-                        <p class="text-gray-600">Status: <span class="text-green-600 font-semibold">Confirmed</span></p>
-                        <p class="text-gray-600">Payment: <span class="text-blue-600 font-semibold">Card Payment</span></p>
-                        <p class="text-gray-600 text-xs">TXN ID: <span id="transactionId">TXN123456789</span></p>
+                        <h4 class="font-semibold mb-3 text-lg border-b pb-1">Booking Information</h4>
+                        <div class="space-y-2">
+                            <p class="text-gray-600"><span class="font-medium">Date:</span> <span id="reservationDate"></span></p>
+                            <p class="text-gray-600"><span class="font-medium">Model:</span> <span id="selectedModel">VORZA Model S</span></p>
+                            <p class="text-gray-600"><span class="font-medium">Status:</span> <span class="text-green-600 font-semibold">Confirmed</span></p>
+                            <p class="text-gray-600"><span class="font-medium">Payment:</span> <span id="paymentMethod">**** **** **** 1234</span></p>
+                            <p class="text-gray-600 text-xs"><span class="font-medium">Transaction ID:</span> <span id="transactionId">TXN123456789</span></p>
+                        </div>
                     </div>
                 </div>
 
-                <div class="border-t pt-4">
-                    <div class="flex justify-between items-center mb-2">
-                        <span>Pre-booking Amount</span>
-                        <span id="bookingAmount">$10,000.00</span>
-                    </div>
-                    <div class="flex justify-between items-center mb-2">
-                        <span>VAT (4%)</span>
-                        <span id="vatAmount">$400.00</span>
-                    </div>
-                    <div class="border-t pt-2 flex justify-between items-center font-semibold text-lg">
-                        <span>Total Amount Paid</span>
-                        <span id="totalPaid">$10,400.00</span>
-                    </div>
-                </div>
-
-                <div class="mt-6 p-4 bg-blue-50 rounded-lg">
-                    <h4 class="font-semibold text-blue-800 mb-2">Next Steps:</h4>
-                    <ul class="text-sm text-blue-700 space-y-1">
-                        <li>• You will receive a confirmation email within 24 hours</li>
-                        <li>• Our team will contact you for final payment and vehicle allocation</li>
-                        <li>• Schedule a test drive at your preferred location</li>
-                        <li>• This is a pre-booking confirmation only</li>
-                        <li>• Your deposit is fully refundable until delivery</li>
+                <!-- Legal Terms Section -->
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+                    <h4 class="font-semibold text-yellow-800 mb-2">⚖️ Legal Terms & Conditions</h4>
+                    <ul class="text-xs text-yellow-700 space-y-1">
+                        <li>• This pre-booking is governed by California State Law and Federal EV regulations</li>
+                        <li>• Deposit is fully refundable within 30 days of booking date</li>
+                        <li>• Vehicle delivery estimated 6-12 months from booking confirmation</li>
+                        <li>• Final pricing subject to federal and state EV incentives at delivery</li>
+                        <li>• Customer agrees to VORZA Terms of Service and Privacy Policy</li>
                     </ul>
                 </div>
 
-                <!-- QR Code Section -->
-                <div class="mt-6 p-4 bg-gray-100 rounded-lg text-center">
-                    <h4 class="font-semibold text-gray-800 mb-3">Quick Access</h4>
-                    <div class="flex justify-center space-x-8">
-                        <div class="text-center">
-                            <div class="w-20 h-20 bg-black mx-auto mb-2 flex items-center justify-center">
-                                <svg class="w-16 h-16 text-white" viewBox="0 0 100 100">
-                                    <rect x="0" y="0" width="100" height="100" fill="white"/>
-                                    <rect x="0" y="0" width="20" height="20" fill="black"/>
-                                    <rect x="80" y="0" width="20" height="20" fill="black"/>
-                                    <rect x="0" y="80" width="20" height="20" fill="black"/>
-                                    <rect x="40" y="40" width="20" height="20" fill="black"/>
-                                    <rect x="20" y="20" width="60" height="60" fill="none" stroke="black" stroke-width="2"/>
-                                </svg>
-                            </div>
-                            <p class="text-xs text-gray-600">Track Booking Status</p>
+                <!-- Financial Breakdown -->
+                <div class="bg-white border border-gray-200 rounded-lg p-4 mb-6">
+                    <h4 class="font-semibold mb-3 text-lg">Financial Summary</h4>
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span>Pre-booking Deposit</span>
+                            <span id="bookingAmount">$10,000.00</span>
                         </div>
-                        <div class="text-center">
-                            <div class="w-20 h-20 bg-black mx-auto mb-2 flex items-center justify-center">
-                                <svg class="w-16 h-16 text-white" viewBox="0 0 100 100">
-                                    <rect x="0" y="0" width="100" height="100" fill="white"/>
-                                    <rect x="10" y="10" width="80" height="80" fill="none" stroke="black" stroke-width="3"/>
-                                    <rect x="30" y="30" width="40" height="40" fill="black"/>
-                                </svg>
-                            </div>
-                            <p class="text-xs text-gray-600">Re-download Invoice</p>
+                        <div class="flex justify-between items-center">
+                            <span>Processing Fee</span>
+                            <span>$50.00</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>VAT (4%)</span>
+                            <span id="vatAmount">$400.00</span>
+                        </div>
+                        <div class="border-t pt-2 flex justify-between items-center font-semibold text-lg">
+                            <span>Total Amount Paid</span>
+                            <span id="totalPaid">$10,450.00</span>
                         </div>
                     </div>
                 </div>
+
+                <!-- Next Steps -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                    <h4 class="font-semibold text-blue-800 mb-2">📋 Next Steps & Timeline</h4>
+                    <ul class="text-sm text-blue-700 space-y-1">
+                        <li>• <strong>Within 24 hours:</strong> Email confirmation with detailed specifications</li>
+                        <li>• <strong>Week 1-2:</strong> Personal VORZA advisor assignment and contact</li>
+                        <li>• <strong>Month 1:</strong> Schedule test drive at nearest VORZA center</li>
+                        <li>• <strong>Month 3-6:</strong> Final configuration and color selection</li>
+                        <li>• <strong>Month 6-12:</strong> Production slot allocation and delivery scheduling</li>
+                        <li>• <strong>Delivery:</strong> Final payment and vehicle handover ceremony</li>
+                    </ul>
+                </div>
+
+                <!-- Support Information -->
+                <div class="bg-gray-100 border border-gray-300 rounded-lg p-4 mb-6">
+                    <h4 class="font-semibold text-gray-800 mb-2">🎧 Customer Support</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
+                        <div>
+                            <p><strong>24/7 Hotline:</strong> 1-800-VORZA-911</p>
+                            <p><strong>Email:</strong> support@vorza.com</p>
+                            <p><strong>Live Chat:</strong> vorza.com/chat</p>
+                        </div>
+                        <div>
+                            <p><strong>Booking Support:</strong> bookings@vorza.com</p>
+                            <p><strong>Technical Support:</strong> tech@vorza.com</p>
+                            <p><strong>Refund Requests:</strong> refunds@vorza.com</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- QR Code Section -->
+                <div class="bg-white border border-gray-200 rounded-lg p-6 text-center">
+                    <h4 class="font-semibold text-gray-800 mb-4">📱 Quick Access QR Codes</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="text-center">
+                            <img id="trackingQR" src="" alt="Tracking QR" class="w-24 h-24 mx-auto mb-2 border border-gray-300 rounded">
+                            <p class="text-sm font-medium text-gray-700">Track Booking Status</p>
+                            <p class="text-xs text-gray-500">Scan to check delivery updates</p>
+                        </div>
+                        <div class="text-center">
+                            <img id="invoiceQR" src="" alt="Invoice QR" class="w-24 h-24 mx-auto mb-2 border border-gray-300 rounded">
+                            <p class="text-sm font-medium text-gray-700">Download Invoice</p>
+                            <p class="text-xs text-gray-500">Scan to re-download this invoice</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="mt-6 pt-4 border-t border-gray-300 text-center text-xs text-gray-500">
+                    <p><strong>VORZA Automotive Inc.</strong> | 1 Electric Avenue, Fremont, CA 94538, USA</p>
+                    <p>Tax ID: 12-3456789 | Business License: CA-EV-2024-001 | EPA Certification: EV-CERT-2024</p>
+                    <p>This document is digitally signed and legally binding. Generated on <span id="generationDate"></span></p>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row gap-4 mb-6">
+                <button onclick="generateInvoicePDF()" class="flex-1 bg-red-600 text-white py-3 px-6 rounded-lg hover:bg-red-700 transition-colors font-semibold flex items-center justify-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    Download PDF Invoice
+                </button>
+                <button onclick="window.print()" class="flex-1 bg-gray-600 text-white py-3 px-6 rounded-lg hover:bg-gray-700 transition-colors font-semibold flex items-center justify-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                    </svg>
+                    Print Invoice
+                </button>
+                <button onclick="navigator.share ? navigator.share({title: 'VORZA Booking Confirmation', text: 'My VORZA booking is confirmed!', url: window.location.href}) : alert('Sharing not supported')" class="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors font-semibold flex items-center justify-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"></path>
+                    </svg>
+                    Share Booking
+                </button>
             </div>
 
             <div class="flex space
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9672035467fa5516',t:'MTc1Mzg0ODY5Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9672351f53a74457',t:'MTc1Mzg1MDczNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
