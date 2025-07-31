@@ -519,7 +519,9 @@
                 'R': 'https://community.oriontec.xyz/IMG_9309.jpeg',
                 'L': 'https://vorza.oriontec.xyz/IMG_9340.jpeg',
                 'LP': 'https://vorza.oriontec.xyz/IMG_9347.jpeg',
-                'W': 'https://vorza.oriontec.xyz/IMG_9343.jpeg'
+                'W': 'https://vorza.oriontec.xyz/IMG_9343.jpeg',
+                'ZX': 'https://vorza.oriontec.xyz/IMG_9403.jpeg',
+                'ONE': 'https://vorza.oriontec.xyz/IMG_9407.jpeg'
             };
             
             if (previewImage && modelImages[configurationData.model]) {
@@ -1322,7 +1324,7 @@
                             <div>
                                 <h2 class="text-4xl lg:text-5xl font-light mb-6">Model X</h2>
                                 <p class="text-xl text-gray-600 mb-8">
-                                    The ultimate electric SUV. Spacious, powerful, and packed with advanced technology for the modern family.
+                                    The ultimate electric SUV. Our only SUV model - spacious, powerful, and packed with advanced technology for the modern family.
                                 </p>
                                 <div class="grid grid-cols-2 gap-6 mb-8">
                                     <div>
@@ -1360,7 +1362,7 @@
                             <div class="order-2 lg:order-1">
                                 <h2 class="text-4xl lg:text-5xl font-light mb-6">Model Y</h2>
                                 <p class="text-xl text-gray-600 mb-8">
-                                    The perfect balance of efficiency and versatility. Compact SUV design with maximum utility.
+                                    The perfect balance of efficiency and versatility. Compact sedan design with maximum utility.
                                 </p>
                                 <div class="grid grid-cols-2 gap-6 mb-8">
                                     <div>
@@ -1614,6 +1616,105 @@
 
                         <div class="section-divider"></div>
 
+                        <!-- Model ZX -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                            <div class="order-2 lg:order-1">
+                                <h2 class="text-4xl lg:text-5xl font-light mb-6">Model ZX</h2>
+                                <p class="text-xl text-gray-600 mb-8">
+                                    A futuristic electric performance luxury sedan. Bold design. Extreme power. No compromise.
+                                </p>
+                                <div class="grid grid-cols-2 gap-6 mb-8">
+                                    <div>
+                                        <div class="text-3xl font-light mb-2">800 km</div>
+                                        <div class="text-gray-500">Range</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-3xl font-light mb-2">1.8s</div>
+                                        <div class="text-gray-500">0-100 km/h</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-3xl font-light mb-2">290 km/h</div>
+                                        <div class="text-gray-500">Top Speed</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-3xl font-light mb-2">$101,926</div>
+                                        <div class="text-gray-500">Starting Price</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Performance Badge -->
+                                <div class="bg-gradient-to-r from-red-50 to-orange-50 border border-red-200 rounded-xl p-4 mb-8">
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <span class="text-2xl">⚡</span>
+                                        <span class="font-bold text-red-700">Extreme Performance - 1.8s 0-100km/h!</span>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col sm:flex-row gap-4">
+                                    <button onclick="openModal('booking')" class="interactive-button bg-black text-white px-8 py-4 rounded-full hover:bg-gray-800 transition-all font-semibold">
+                                        Reserve Now
+                                    </button>
+                                    <button onclick="showPage('configurator')" class="interactive-button border-2 border-black text-black px-8 py-4 rounded-full hover:bg-black hover:text-white transition-all font-semibold">
+                                        Configure
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="order-1 lg:order-2">
+                                <img src="https://vorza.oriontec.xyz/IMG_9403.jpeg" alt="VORZA Model ZX" class="w-full rounded-2xl shadow-2xl mb-4">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <img src="https://vorza.oriontec.xyz/IMG_9404.jpeg" alt="VORZA Model ZX Black" class="w-full h-20 object-cover rounded-lg">
+                                    <img src="https://vorza.oriontec.xyz/IMG_9403.jpeg" alt="VORZA Model ZX Detail" class="w-full h-20 object-cover rounded-lg">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section-divider"></div>
+
+                        <!-- Vorza One -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                            <div>
+                                <img src="https://vorza.oriontec.xyz/IMG_9407.jpeg" alt="Vorza One" class="w-full rounded-2xl shadow-2xl">
+                            </div>
+                            <div>
+                                <h2 class="text-4xl lg:text-5xl font-light mb-6">Vorza One</h2>
+                                <p class="text-xl text-gray-600 mb-8">
+                                    The accessible entry point to electric luxury. Premium VORZA experience at an unbeatable price.
+                                </p>
+                                <div class="grid grid-cols-2 gap-6 mb-8">
+                                    <div>
+                                        <div class="text-3xl font-light mb-2">670 km</div>
+                                        <div class="text-gray-500">Range</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-3xl font-light mb-2">3.6s</div>
+                                        <div class="text-gray-500">0-100 km/h</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-3xl font-light mb-2">250 km/h</div>
+                                        <div class="text-gray-500">Top Speed</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-3xl font-light mb-2">$75,000</div>
+                                        <div class="text-gray-500">Starting Price</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Value Badge -->
+                                <div class="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl p-4 mb-8">
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <span class="text-2xl">🌟</span>
+                                        <span class="font-bold text-blue-700">Best Value - Premium Features at $75,000!</span>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col sm:flex-row gap-4">
+                                    <button onclick="openModal('booking')" class="interactive-button bg-black text-white px-8 py-4 rounded-full hover:bg-gray-800 transition-all font-semibold">
+                                        Reserve Now
+                                    </button>
+                                    <button onclick="showPage('configurator')" class="interactive-button border-2 border-black text-black px-8 py-4 rounded-full hover:bg-black hover:text-white transition-all font-semibold">
+                                        Configure
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
 
                     </div>
                 </div>
@@ -1677,7 +1778,18 @@
                                 <p class="text-gray-600 text-sm mb-4">From $58,000</p>
                                 <div class="text-sm text-gray-500">400 km range • 4.8s 0-100</div>
                             </div>
-
+                            <div class="model-card bg-white p-6 rounded-2xl shadow-lg" onclick="selectModel('ZX', 101926)">
+                                <img src="https://vorza.oriontec.xyz/IMG_9403.jpeg" alt="Model ZX" class="w-full h-40 object-cover rounded-lg mb-4">
+                                <h3 class="text-xl font-semibold mb-2">Model ZX</h3>
+                                <p class="text-gray-600 text-sm mb-4">From $101,926</p>
+                                <div class="text-sm text-gray-500">800 km range • 1.8s 0-100</div>
+                            </div>
+                            <div class="model-card bg-white p-6 rounded-2xl shadow-lg" onclick="selectModel('ONE', 75000)">
+                                <img src="https://vorza.oriontec.xyz/IMG_9407.jpeg" alt="Vorza One" class="w-full h-40 object-cover rounded-lg mb-4">
+                                <h3 class="text-xl font-semibold mb-2">Vorza One</h3>
+                                <p class="text-gray-600 text-sm mb-4">From $75,000</p>
+                                <div class="text-sm text-gray-500">670 km range • 3.6s 0-100</div>
+                            </div>
                         </div>
                     </div>
 
@@ -1944,98 +2056,4 @@
                                 <div class="testimonial-slide">
                                     <div class="text-center">
                                         <p class="text-xl text-gray-600 mb-6 italic">
-                                            "The VORZA Model S has completely changed my perspective on electric vehicles. The performance is incredible and the technology is years ahead."
-                                        </p>
-                                        <div class="font-semibold">Sarah Johnson</div>
-                                        <div class="text-gray-500">Model S Owner</div>
-                                    </div>
-                                </div>
-                                <div class="testimonial-slide">
-                                    <div class="text-center">
-                                        <p class="text-xl text-gray-600 mb-6 italic">
-                                            "As a family, the Model X gives us everything we need. Space, safety, and the peace of mind that comes with zero emissions."
-                                        </p>
-                                        <div class="font-semibold">Michael Chen</div>
-                                        <div class="text-gray-500">Model X Owner</div>
-                                    </div>
-                                </div>
-                                <div class="testimonial-slide">
-                                    <div class="text-center">
-                                        <p class="text-xl text-gray-600 mb-6 italic">
-                                            "The charging infrastructure and customer service have exceeded all my expectations. VORZA truly cares about their customers."
-                                        </p>
-                                        <div class="font-semibold">Emma Rodriguez</div>
-                                        <div class="text-gray-500">Model Y Owner</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
-
-        <!-- CHARGING PAGE -->
-        <div id="chargingPage" class="page-content hidden">
-            <section class="pt-24 pb-20 bg-white">
-                <div class="max-w-7xl mx-auto px-4">
-                    <div class="text-center mb-16">
-                        <h1 class="text-5xl lg:text-7xl font-light mb-6">Find Your Charge</h1>
-                        <p class="text-xl text-gray-600 max-w-4xl mx-auto mb-8">
-                            View the network of VORZA Superchargers and Destination Chargers available near you.
-                        </p>
-                        
-                        <!-- Stats -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto mb-12">
-                            <div class="bg-red-50 p-8 rounded-2xl">
-                                <div class="text-4xl font-light text-red-600 mb-2">780</div>
-                                <div class="text-red-800 font-semibold">Superchargers</div>
-                                <div class="text-red-600 text-sm mt-1">Fast charging stations</div>
-                            </div>
-                            <div class="bg-gray-50 p-8 rounded-2xl">
-                                <div class="text-4xl font-light text-gray-600 mb-2">1,280</div>
-                                <div class="text-gray-800 font-semibold">Destination Chargers</div>
-                                <div class="text-gray-600 text-sm mt-1">Convenient charging locations</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- California Map -->
-                    <div class="bg-gray-100 rounded-2xl p-8 mb-12">
-                        <h2 class="text-3xl font-light text-center mb-8">California Charging Network</h2>
-                        <div class="relative bg-white rounded-xl p-8 shadow-lg">
-                            <!-- California Map SVG -->
-                            <svg viewBox="0 0 800 600" class="w-full h-96 md:h-[500px]">
-                                <!-- California outline -->
-                                <path d="M150 100 L200 80 L250 90 L300 85 L350 95 L400 100 L450 110 L500 120 L550 140 L580 160 L600 180 L620 200 L640 230 L650 260 L660 290 L670 320 L680 350 L690 380 L700 410 L710 440 L720 470 L730 500 L720 520 L700 530 L680 535 L660 540 L640 545 L620 550 L600 555 L580 560 L560 565 L540 570 L520 575 L500 580 L480 585 L460 590 L440 595 L420 590 L400 585 L380 580 L360 575 L340 570 L320 565 L300 560 L280 555 L260 550 L240 545 L220 540 L200 535 L180 530 L160 525 L140 520 L120 515 L100 510 L90 500 L85 490 L80 480 L75 470 L70 460 L65 450 L60 440 L55 430 L50 420 L45 410 L40 400 L35 390 L30 380 L25 370 L20 360 L15 350 L10 340 L5 330 L10 320 L15 310 L20 300 L25 290 L30 280 L35 270 L40 260 L45 250 L50 240 L55 230 L60 220 L65 210 L70 200 L75 190 L80 180 L85 170 L90 160 L95 150 L100 140 L105 130 L110 120 L115 110 L120 100 L130 95 L140 98 Z" 
-                                      fill="#f3f4f6" stroke="#d1d5db" stroke-width="2"/>
-                                
-                                <!-- Superchargers (Red dots) - 780 total, showing representative locations -->
-                                <!-- Los Angeles Area -->
-                                <circle cx="200" cy="450" r="4" fill="#dc2626" class="animate-pulse"/>
-                                <circle cx="220" cy="460" r="4" fill="#dc2626" class="animate-pulse"/>
-                                <circle cx="240" cy="440" r="4" fill="#dc2626" class="animate-pulse"/>
-                                <circle cx="180" cy="470" r="4" fill="#dc2626" class="animate-pulse"/>
-                                <circle cx="260" cy="450" r="4" fill="#dc2626" class="animate-pulse"/>
-                                
-                                <!-- San Francisco Bay Area -->
-                                <circle cx="150" cy="300" r="4" fill="#dc2626" class="animate-pulse"/>
-                                <circle cx="170" cy="310" r="4" fill="#dc2626" class="animate-pulse"/>
-                                <circle cx="190" cy="290" r="4" fill="#dc2626" class="animate-pulse"/>
-                                <circle cx="160" cy="320" r="4" fill="#dc2626" class="animate-pulse"/>
-                                <circle cx="180" cy="280" r="4" fill="#dc2626" class="animate-pulse"/>
-                                
-                                <!-- San Diego Area -->
-                                <circle cx="280" cy="520" r="4" fill="#dc2626" class="animate-pulse"/>
-                                <circle cx="300" cy="510" r="4" fill="#dc2626" class="animate-pulse"/>
-                                <circle cx="260" cy="530" r="4" fill="#dc2626" class="animate-pulse"/>
-                                
-                                <!-- Sacramento Area -->
-                                <circle cx="200" cy="200" r="4" fill="#dc2626" class="animate-pulse"/>
-                                <circle cx="220" cy="190" r="4" fill="#dc2626" class="animate-pulse"/>
-                                <circle cx="180" cy="210" r="4" fill="#dc2626" class="animate-pulse"/>
-                                
-                                <!-- Central Valley -->
-                                <circle cx="250" cy="350" r="4" fill="#dc2626" class="animate-pulse"/>
-                                <circle cx="270" cy="340" r="4" fill="#dc2626" class="animate-pulse"/>
-                                <circle cx="290" cy="360" r="4" fill="#dc2626" class="animate-pulse<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'967a0f8756243ae6',t:'MTc1MzkzMzA4My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+                                            "The VORZA<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'967a2bf511915506',t:'MTc1MzkzNDI0Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
